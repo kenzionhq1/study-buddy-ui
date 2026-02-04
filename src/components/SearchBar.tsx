@@ -61,7 +61,7 @@ const SearchBar = ({
           {isLoading ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span>Searching...</span>
+              <span className="truncate max-w-[100px]">Searching "{query}"...</span>
             </>
           ) : (
             <span>Search</span>

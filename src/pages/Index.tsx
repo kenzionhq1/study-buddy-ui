@@ -32,7 +32,7 @@ const Index = () => {
             <h2 className="mb-8 text-center text-2xl font-bold text-foreground sm:text-3xl">
               Choose a Subject
             </h2>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3">
               {subjects.map((subject, index) => (
                 <SubjectCard key={subject.id} subject={subject} index={index} />
               ))}

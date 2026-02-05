@@ -1,12 +1,14 @@
-import { GraduationCap, ArrowLeft, Sun, Moon } from 'lucide-react';
+import { GraduationCap, ArrowLeft, Sun, Moon, Bookmark } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from 'next-themes';
+import { useBookmarks } from '@/hooks/useBookmarks';
 
 const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const isHomePage = location.pathname === '/';
   const { theme, setTheme } = useTheme();
+  const { bookmarks } = useBookmarks();
 
   const toggleTheme = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
@@ -46,6 +48,18 @@ const Header = () => {
             className="hidden rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground sm:inline-flex"
           >
             Subjects
+          </Link>
+          <Link
+            to="/bookmarks"
+            className="relative flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            aria-label="Saved topics"
+          >
+            <Bookmark className="h-5 w-5" />
+            {bookmarks.length > 0 && (
+              <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                {bookmarks.length > 9 ? '9+' : bookmarks.length}
+              </span>
+            )}
           </Link>
           <button
             onClick={toggleTheme}

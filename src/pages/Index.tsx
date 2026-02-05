@@ -42,32 +42,32 @@ const Index = () => {
 
         {/* Features Section */}
         <section className="border-t border-border bg-secondary/30 py-12 sm:py-16">
-          <div className="container">
-            <div className="mx-auto grid max-w-4xl gap-8 sm:grid-cols-3">
-              <div className="text-center">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <div className="container px-0 sm:px-6">
+            <div className="mx-auto flex max-w-4xl gap-4 overflow-x-auto px-4 pb-2 sm:grid sm:grid-cols-3 sm:gap-8 sm:overflow-visible sm:px-0 sm:pb-0">
+              <div className="min-w-[140px] flex-shrink-0 text-center sm:min-w-0 sm:flex-shrink">
+                <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 sm:mb-4 sm:h-12 sm:w-12">
                   <span className="text-2xl">📚</span>
                 </div>
-                <h3 className="mb-2 font-semibold text-foreground">Clear Explanations</h3>
-                <p className="text-sm text-muted-foreground">
+                <h3 className="mb-1 text-sm font-semibold text-foreground sm:mb-2 sm:text-base">Clear Explanations</h3>
+                <p className="text-xs text-muted-foreground sm:text-sm">
                   Topics explained in simple, student-friendly language
                 </p>
               </div>
-              <div className="text-center">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+              <div className="min-w-[140px] flex-shrink-0 text-center sm:min-w-0 sm:flex-shrink">
+                <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 sm:mb-4 sm:h-12 sm:w-12">
                   <span className="text-2xl">✅</span>
                 </div>
-                <h3 className="mb-2 font-semibold text-foreground">Key Points</h3>
-                <p className="text-sm text-muted-foreground">
+                <h3 className="mb-1 text-sm font-semibold text-foreground sm:mb-2 sm:text-base">Key Points</h3>
+                <p className="text-xs text-muted-foreground sm:text-sm">
                   Important facts highlighted for quick revision
                 </p>
               </div>
-              <div className="text-center">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+              <div className="min-w-[140px] flex-shrink-0 text-center sm:min-w-0 sm:flex-shrink">
+                <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 sm:mb-4 sm:h-12 sm:w-12">
                   <span className="text-2xl">🎯</span>
                 </div>
-                <h3 className="mb-2 font-semibold text-foreground">Exam Tips</h3>
-                <p className="text-sm text-muted-foreground">
+                <h3 className="mb-1 text-sm font-semibold text-foreground sm:mb-2 sm:text-base">Exam Tips</h3>
+                <p className="text-xs text-muted-foreground sm:text-sm">
                   WAEC & NECO focused tips for each topic
                 </p>
               </div>

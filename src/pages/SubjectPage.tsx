@@ -1,5 +1,5 @@
-import { useState, useCallback } from 'react';
-import { useParams, Navigate } from 'react-router-dom';
+import { useState, useCallback, useEffect } from 'react';
+import { useParams, useSearchParams, Navigate } from 'react-router-dom';
 import { 
   Leaf, 
   FlaskConical, 
@@ -32,6 +32,7 @@ type SearchState = 'initial' | 'loading' | 'results' | 'no-results';
 
 const SubjectPage = () => {
   const { subjectId } = useParams<{ subjectId: string }>();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [searchState, setSearchState] = useState<SearchState>('initial');
   const [searchQuery, setSearchQuery] = useState('');
   const [topicResult, setTopicResult] = useState<TopicContent | null>(null);
@@ -54,6 +55,16 @@ const SubjectPage = () => {
       }
     }, 1500);
   }, [subjectId]);
+
+  // Auto-search when topic query param is present (from bookmarks)
+  useEffect(() => {
+    const topicParam = searchParams.get('topic');
+    if (topicParam && searchState === 'initial') {
+      handleSearch(topicParam);
+      // Clear the query param after searching
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, searchState, handleSearch, setSearchParams]);
 
   const handleSuggestedTopicClick = (topic: string) => {
     handleSearch(topic);

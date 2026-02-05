@@ -4,9 +4,12 @@ import {
   List, 
   Lightbulb, 
   GraduationCap,
-  CheckCircle2
+  CheckCircle2,
+  Bookmark,
+  BookmarkCheck
 } from 'lucide-react';
 import { TopicContent } from '@/data/subjects';
+import { useBookmarks } from '@/hooks/useBookmarks';
 import { cn } from '@/lib/utils';
 
 interface TopicResultProps {
@@ -15,19 +18,45 @@ interface TopicResultProps {
 }
 
 const TopicResult = ({ topic, colorClass = 'primary' }: TopicResultProps) => {
+  const { isBookmarked, toggleBookmark } = useBookmarks();
+  const bookmarked = isBookmarked(topic.title);
+
   return (
     <div className="animate-fade-in space-y-6">
       {/* Topic Header */}
       <div className={cn(
-        "rounded-2xl border-2 p-6 sm:p-8",
+        "relative rounded-2xl border-2 p-6 sm:p-8",
         `bg-${colorClass} border-${colorClass}`
       )}>
-        <span className={cn("text-sm font-medium", `text-${colorClass}`)}>
-          {topic.subject}
-        </span>
+        <div className="flex items-start justify-between gap-4">
+          <span className={cn("text-sm font-medium", `text-${colorClass}`)}>
+            {topic.subject}
+          </span>
+          <button
+            onClick={() => toggleBookmark(topic)}
+            className={cn(
+              "flex h-10 w-10 items-center justify-center rounded-xl transition-all",
+              bookmarked
+                ? "bg-primary text-primary-foreground"
+                : "bg-card/80 text-muted-foreground hover:bg-card hover:text-foreground"
+            )}
+            aria-label={bookmarked ? "Remove bookmark" : "Save topic"}
+          >
+            {bookmarked ? (
+              <BookmarkCheck className="h-5 w-5" />
+            ) : (
+              <Bookmark className="h-5 w-5" />
+            )}
+          </button>
+        </div>
         <h1 className="mt-2 text-3xl font-bold text-foreground sm:text-4xl">
           {topic.title}
         </h1>
+        {bookmarked && (
+          <p className="mt-2 text-sm text-muted-foreground">
+            ✓ Saved for revision
+          </p>
+        )}
       </div>
 
       {/* Definition */}

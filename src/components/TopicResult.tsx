@@ -6,18 +6,21 @@ import {
   GraduationCap,
   CheckCircle2,
   Bookmark,
-  BookmarkCheck
+  BookmarkCheck,
+  Sparkles
 } from 'lucide-react';
 import { TopicContent } from '@/data/subjects';
 import { useBookmarks } from '@/hooks/useBookmarks';
 import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 
 interface TopicResultProps {
   topic: TopicContent;
   colorClass?: string;
+  isAiLoading?: boolean;
 }
 
-const TopicResult = ({ topic, colorClass = 'primary' }: TopicResultProps) => {
+const TopicResult = ({ topic, colorClass = 'primary', isAiLoading = false }: TopicResultProps) => {
   const { isBookmarked, toggleBookmark } = useBookmarks();
   const bookmarked = isBookmarked(topic.title);
 
@@ -29,9 +32,23 @@ const TopicResult = ({ topic, colorClass = 'primary' }: TopicResultProps) => {
         `bg-${colorClass} border-${colorClass}`
       )}>
         <div className="flex items-start justify-between gap-4">
-          <span className={cn("text-sm font-medium", `text-${colorClass}`)}>
-            {topic.subject}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className={cn("text-sm font-medium", `text-${colorClass}`)}>
+              {topic.subject}
+            </span>
+            {topic.isAiEnhanced && (
+              <Badge variant="secondary" className="flex items-center gap-1 text-xs">
+                <Sparkles className="h-3 w-3" />
+                AI-Enhanced
+              </Badge>
+            )}
+            {isAiLoading && (
+              <Badge variant="outline" className="flex items-center gap-1 text-xs animate-pulse">
+                <Sparkles className="h-3 w-3 animate-spin" />
+                Enhancing...
+              </Badge>
+            )}
+          </div>
           <button
             onClick={() => toggleBookmark(topic)}
             className={cn(

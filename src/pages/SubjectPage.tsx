@@ -28,46 +28,46 @@ const iconMap: Record<string, LucideIcon> = {
   Pi,
 };
 
-type SearchState = 'initial' | 'loading' | 'results' | 'no-results';
+type LookupState = 'initial' | 'loading' | 'results' | 'no-results';
 
 const SubjectPage = () => {
   const { subjectId } = useParams<{ subjectId: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [searchState, setSearchState] = useState<SearchState>('initial');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [lookupState, setLookupState] = useState<LookupState>('initial');
+  const [lookupQuery, setLookupQuery] = useState('');
   const [topicResult, setTopicResult] = useState<TopicContent | null>(null);
 
   const subject = subjects.find(s => s.id === subjectId);
 
-  const handleSearch = useCallback((query: string) => {
-    setSearchQuery(query);
-    setSearchState('loading');
+  const handleLookup = useCallback((query: string) => {
+    setLookupQuery(query);
+    setLookupState('loading');
     
-    // Simulate intelligent search delay
+    // Simulate intelligent lookup delay
     setTimeout(() => {
       const result = searchTopics(query, subjectId);
       if (result) {
         setTopicResult(result);
-        setSearchState('results');
+        setLookupState('results');
       } else {
         setTopicResult(null);
-        setSearchState('no-results');
+        setLookupState('no-results');
       }
     }, 1500);
   }, [subjectId]);
 
-  // Auto-search when topic query param is present (from bookmarks)
+  // Auto-lookup when topic query param is present (from bookmarks)
   useEffect(() => {
     const topicParam = searchParams.get('topic');
-    if (topicParam && searchState === 'initial') {
-      handleSearch(topicParam);
-      // Clear the query param after searching
+    if (topicParam && lookupState === 'initial') {
+      handleLookup(topicParam);
+      // Clear the query param after looking up
       setSearchParams({}, { replace: true });
     }
-  }, [searchParams, searchState, handleSearch, setSearchParams]);
+  }, [searchParams, lookupState, handleLookup, setSearchParams]);
 
   const handleSuggestedTopicClick = (topic: string) => {
-    handleSearch(topic);
+    handleLookup(topic);
   };
 
   if (!subject) {
@@ -106,18 +106,18 @@ const SubjectPage = () => {
           </div>
         </section>
 
-        {/* Search Section */}
+        {/* Topic Lookup Section */}
         <section className="py-8 sm:py-12">
           <div className="container">
             <div className="mx-auto max-w-2xl">
               <SearchBar 
-                onSearch={handleSearch}
-                isLoading={searchState === 'loading'}
-                placeholder={`Search a ${subject.name} topic...`}
+                onSearch={handleLookup}
+                isLoading={lookupState === 'loading'}
+                placeholder={`Look up a ${subject.name} topic...`}
                 colorClass={subject.colorClass}
               />
               
-              {searchState === 'initial' && (
+              {lookupState === 'initial' && (
                 <SuggestedTopics 
                   topics={subject.topics.slice(0, 5)}
                   onTopicClick={handleSuggestedTopicClick}
@@ -132,19 +132,19 @@ const SubjectPage = () => {
         <section className="pb-16 sm:pb-20">
           <div className="container">
             <div className="mx-auto max-w-3xl">
-              {searchState === 'initial' && (
+              {lookupState === 'initial' && (
                 <EmptyState type="initial" colorClass={subject.colorClass} />
               )}
               
-              {searchState === 'loading' && (
+              {lookupState === 'loading' && (
                 <LoadingSpinner colorClass={subject.colorClass} />
               )}
               
-              {searchState === 'no-results' && (
-                <EmptyState type="no-results" query={searchQuery} colorClass={subject.colorClass} />
+              {lookupState === 'no-results' && (
+                <EmptyState type="no-results" query={lookupQuery} colorClass={subject.colorClass} />
               )}
               
-              {searchState === 'results' && topicResult && (
+              {lookupState === 'results' && topicResult && (
                 <TopicResult topic={topicResult} colorClass={subject.colorClass} />
               )}
             </div>

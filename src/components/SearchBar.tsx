@@ -12,7 +12,7 @@ interface SearchBarProps {
 const SearchBar = ({ 
   onSearch, 
   isLoading = false, 
-  placeholder = "Search a topic (e.g. Photosynthesis)",
+  placeholder = "Look up a topic (e.g. Photosynthesis)",
   colorClass = "primary"
 }: SearchBarProps) => {
   const [query, setQuery] = useState('');
@@ -61,10 +61,10 @@ const SearchBar = ({
           {isLoading ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span className="truncate max-w-[100px]">Searching "{query}"...</span>
+              <span className="truncate max-w-[100px]">Looking up "{query}"...</span>
             </>
           ) : (
-            <span>Search</span>
+            <span>Look Up</span>
           )}
         </button>
       </div>

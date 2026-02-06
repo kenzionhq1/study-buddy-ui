@@ -19,7 +19,7 @@ const Index = () => {
               </h1>
               <p className="text-lg text-muted-foreground sm:text-xl">
                 Your personal study companion for WAEC and NECO success. 
-                Select a subject and search any topic to get detailed explanations, 
+                Select a subject and look up any topic to get detailed explanations, 
                 key points, examples, and exam tips.
               </p>
             </div>

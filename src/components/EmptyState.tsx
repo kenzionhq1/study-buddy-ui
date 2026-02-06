@@ -18,7 +18,7 @@ const EmptyState = ({ type, query, colorClass = 'primary' }: EmptyStateProps) =>
           <Search className={cn("h-10 w-10", `text-${colorClass}`)} />
         </div>
         <h3 className="mb-2 text-xl font-semibold text-foreground">
-          Search for a topic
+          Look up a topic
         </h3>
         <p className="max-w-sm text-muted-foreground">
           Enter a topic name above to get a detailed explanation with examples and exam tips.
@@ -37,11 +37,11 @@ const EmptyState = ({ type, query, colorClass = 'primary' }: EmptyStateProps) =>
       </h3>
       <p className="max-w-sm text-muted-foreground">
         We couldn't find any results for "<span className="font-medium text-foreground">{query}</span>". 
-        Try searching for a different topic or check your spelling.
+        Try looking up a different topic or check your spelling.
       </p>
       <div className="mt-6">
         <p className="text-sm text-muted-foreground">
-          💡 Try searching for: <span className="font-medium">Photosynthesis</span>, <span className="font-medium">Quadratic Equations</span>, or <span className="font-medium">Atomic Structure</span>
+          💡 Try looking up: <span className="font-medium">Photosynthesis</span>, <span className="font-medium">Quadratic Equations</span>, or <span className="font-medium">Atomic Structure</span>
         </p>
       </div>
     </div>

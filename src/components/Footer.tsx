@@ -12,6 +12,11 @@ const Footer = () => {
             © 2024 Student Study Assistant
           </p>
         </div>
+        <div className="mt-3 border-t border-border pt-3 text-center">
+          <p className="text-xs text-muted-foreground">
+            Content aligned with WAEC/NECO syllabus. Prototype version.
+          </p>
+        </div>
       </div>
     </footer>
   );

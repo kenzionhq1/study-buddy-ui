@@ -21,7 +21,7 @@ const LoadingSpinner = ({ colorClass = 'primary' }: LoadingSpinnerProps) => {
         />
       </div>
       <p className="mt-6 text-lg font-medium text-foreground animate-pulse-soft">
-        Finding your topic...
+        Retrieving your topic...
       </p>
       <p className="mt-2 text-sm text-muted-foreground">
         Preparing a detailed explanation for you

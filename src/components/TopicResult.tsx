@@ -1,20 +1,16 @@
 import { 
   BookOpen, 
   FileText, 
-  CheckCircle2,
+  List, 
   Lightbulb, 
   GraduationCap,
+  CheckCircle2,
   Bookmark,
-  BookmarkCheck,
-  Sparkles,
-  Globe
+  BookmarkCheck
 } from 'lucide-react';
 import { TopicContent } from '@/data/subjects';
 import { useBookmarks } from '@/hooks/useBookmarks';
 import { cn } from '@/lib/utils';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 
 interface TopicResultProps {
   topic: TopicContent;
@@ -26,207 +22,133 @@ const TopicResult = ({ topic, colorClass = 'primary' }: TopicResultProps) => {
   const bookmarked = isBookmarked(topic.title);
 
   return (
-    <div className="animate-fade-in">
-      {/* Main AI Panel Container */}
+    <div className="animate-fade-in space-y-6">
+      {/* Topic Header */}
       <div className={cn(
-        "relative overflow-hidden rounded-3xl border bg-card shadow-xl",
-        "ring-1 ring-black/5 dark:ring-white/5"
+        "relative rounded-2xl border-2 p-6 sm:p-8",
+        `bg-${colorClass} border-${colorClass}`
       )}>
-        {/* Subtle gradient overlay at top */}
-        <div className={cn(
-          "absolute inset-x-0 top-0 h-32 opacity-50",
-          `bg-gradient-to-b from-${colorClass}/20 to-transparent`
-        )} />
-
-        <ScrollArea className="relative max-h-[80vh]">
-          <div className="p-6 sm:p-8 lg:p-10">
-            
-            {/* Panel Header */}
-            <header className="mb-8 space-y-4">
-              {/* Subject Badge & AI Label */}
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <Badge 
-                  variant="secondary" 
-                  className={cn(
-                    "px-3 py-1 text-xs font-semibold uppercase tracking-wider",
-                    `bg-${colorClass}/20 text-${colorClass} border-${colorClass}/30`
-                  )}
-                >
-                  {topic.subject}
-                </Badge>
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  <span>AI-powered explanation</span>
-                </div>
-              </div>
-
-              {/* Topic Title */}
-              <h1 className="text-2xl font-bold leading-tight text-foreground sm:text-3xl lg:text-4xl">
-                {topic.title}
-              </h1>
-
-              {/* Actions Bar */}
-              <div className="flex flex-wrap items-center gap-2 pt-2">
-                <Button
-                  variant={bookmarked ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => toggleBookmark(topic)}
-                  className={cn(
-                    "gap-2 rounded-full transition-all",
-                    bookmarked && "bg-primary text-primary-foreground"
-                  )}
-                >
-                  {bookmarked ? (
-                    <>
-                      <BookmarkCheck className="h-4 w-4" />
-                      <span>Saved</span>
-                    </>
-                  ) : (
-                    <>
-                      <Bookmark className="h-4 w-4" />
-                      <span>Save for later</span>
-                    </>
-                  )}
-                </Button>
-              </div>
-            </header>
-
-            {/* Content Sections */}
-            <div className="space-y-8">
-              
-              {/* 📘 Definition Section */}
-              <section className="group">
-                <div className="mb-3 flex items-center gap-3">
-                  <div className={cn(
-                    "flex h-9 w-9 items-center justify-center rounded-xl transition-colors",
-                    `bg-${colorClass}/10 group-hover:bg-${colorClass}/20`
-                  )}>
-                    <BookOpen className={cn("h-5 w-5", `text-${colorClass}`)} />
-                  </div>
-                  <h2 className="text-lg font-semibold text-foreground">Definition</h2>
-                </div>
-                <div className={cn(
-                  "rounded-2xl border border-border/50 bg-muted/30 p-5",
-                  "transition-colors hover:bg-muted/50"
-                )}>
-                  <p className="text-base leading-relaxed text-foreground/90 sm:text-lg">
-                    {topic.definition}
-                  </p>
-                </div>
-              </section>
-
-              {/* 🧠 Explanation Section */}
-              <section className="group">
-                <div className="mb-3 flex items-center gap-3">
-                  <div className={cn(
-                    "flex h-9 w-9 items-center justify-center rounded-xl transition-colors",
-                    `bg-${colorClass}/10 group-hover:bg-${colorClass}/20`
-                  )}>
-                    <FileText className={cn("h-5 w-5", `text-${colorClass}`)} />
-                  </div>
-                  <h2 className="text-lg font-semibold text-foreground">Detailed Explanation</h2>
-                </div>
-                <div className="space-y-4 pl-12">
-                  {topic.explanation.split('\n\n').map((paragraph, index) => (
-                    <p key={index} className="text-base leading-relaxed text-foreground/80">
-                      {paragraph}
-                    </p>
-                  ))}
-                </div>
-              </section>
-
-              {/* ✅ Key Points Section */}
-              <section className="group">
-                <div className="mb-3 flex items-center gap-3">
-                  <div className={cn(
-                    "flex h-9 w-9 items-center justify-center rounded-xl transition-colors",
-                    `bg-${colorClass}/10 group-hover:bg-${colorClass}/20`
-                  )}>
-                    <CheckCircle2 className={cn("h-5 w-5", `text-${colorClass}`)} />
-                  </div>
-                  <h2 className="text-lg font-semibold text-foreground">Key Points</h2>
-                </div>
-                <ul className="space-y-3 pl-12">
-                  {topic.keyPoints.map((point, index) => (
-                    <li key={index} className="flex items-start gap-3">
-                      <span className={cn(
-                        "mt-1.5 h-2 w-2 flex-shrink-0 rounded-full",
-                        `bg-${colorClass}`
-                      )} />
-                      <span className="text-base text-foreground/80">{point}</span>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-
-              {/* 🌍 Real-World Example Section */}
-              <section className="group">
-                <div className="mb-3 flex items-center gap-3">
-                  <div className={cn(
-                    "flex h-9 w-9 items-center justify-center rounded-xl transition-colors",
-                    `bg-${colorClass}/10 group-hover:bg-${colorClass}/20`
-                  )}>
-                    <Globe className={cn("h-5 w-5", `text-${colorClass}`)} />
-                  </div>
-                  <h2 className="text-lg font-semibold text-foreground">{topic.example.title}</h2>
-                </div>
-                <div className={cn(
-                  "rounded-2xl border-2 p-5",
-                  `border-${colorClass}/30 bg-${colorClass}/5`
-                )}>
-                  <div className="space-y-2">
-                    {topic.example.content.split('\n').map((line, index) => (
-                      <p key={index} className="text-base leading-relaxed text-foreground/90">
-                        {line}
-                      </p>
-                    ))}
-                  </div>
-                </div>
-              </section>
-
-              {/* 🎯 Exam Tips Section */}
-              <section className="group">
-                <div className="mb-3 flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 transition-colors group-hover:bg-primary/20">
-                    <GraduationCap className="h-5 w-5 text-primary" />
-                  </div>
-                  <h2 className="text-lg font-semibold text-foreground">WAEC/NECO Exam Tips</h2>
-                </div>
-                <div className="rounded-2xl border-2 border-primary/30 bg-primary/5 p-5">
-                  <ul className="space-y-4">
-                    {topic.examTips.map((tip, index) => (
-                      <li key={index} className="flex items-start gap-4">
-                        <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
-                          {index + 1}
-                        </span>
-                        <span className="pt-0.5 text-base text-foreground/90">{tip}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </section>
-
-            </div>
-
-            {/* Footer */}
-            <footer className="mt-10 border-t border-border/50 pt-6">
-              <div className="flex flex-wrap items-center justify-between gap-4 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <Lightbulb className="h-4 w-4" />
-                  <span>Tip: Save this topic to review later before exams</span>
-                </div>
-                {bookmarked && (
-                  <span className="flex items-center gap-1.5 text-primary">
-                    <BookmarkCheck className="h-4 w-4" />
-                    Saved for revision
-                  </span>
-                )}
-              </div>
-            </footer>
-
-          </div>
-        </ScrollArea>
+        <div className="flex items-start justify-between gap-4">
+          <span className={cn("text-sm font-medium", `text-${colorClass}`)}>
+            {topic.subject}
+          </span>
+          <button
+            onClick={() => toggleBookmark(topic)}
+            className={cn(
+              "flex h-10 w-10 items-center justify-center rounded-xl transition-all",
+              bookmarked
+                ? "bg-primary text-primary-foreground"
+                : "bg-card/80 text-muted-foreground hover:bg-card hover:text-foreground"
+            )}
+            aria-label={bookmarked ? "Remove bookmark" : "Save topic"}
+          >
+            {bookmarked ? (
+              <BookmarkCheck className="h-5 w-5" />
+            ) : (
+              <Bookmark className="h-5 w-5" />
+            )}
+          </button>
+        </div>
+        <h1 className="mt-2 text-3xl font-bold text-foreground sm:text-4xl">
+          {topic.title}
+        </h1>
+        {bookmarked && (
+          <p className="mt-2 text-sm text-muted-foreground">
+            ✓ Saved for revision
+          </p>
+        )}
       </div>
+
+      {/* Definition */}
+      <section className="rounded-2xl border border-border bg-card p-6 shadow-card sm:p-8">
+        <div className="mb-4 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+            <BookOpen className="h-5 w-5 text-primary" />
+          </div>
+          <h2 className="text-xl font-bold text-foreground">Definition</h2>
+        </div>
+        <p className="text-lg leading-relaxed text-foreground">
+          {topic.definition}
+        </p>
+      </section>
+
+      {/* Detailed Explanation */}
+      <section className="rounded-2xl border border-border bg-card p-6 shadow-card sm:p-8">
+        <div className="mb-4 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+            <FileText className="h-5 w-5 text-primary" />
+          </div>
+          <h2 className="text-xl font-bold text-foreground">Detailed Explanation</h2>
+        </div>
+        <div className="prose prose-lg max-w-none">
+          {topic.explanation.split('\n\n').map((paragraph, index) => (
+            <p key={index} className="mb-4 leading-relaxed text-foreground">
+              {paragraph}
+            </p>
+          ))}
+        </div>
+      </section>
+
+      {/* Key Points */}
+      <section className="rounded-2xl border border-border bg-card p-6 shadow-card sm:p-8">
+        <div className="mb-4 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+            <List className="h-5 w-5 text-primary" />
+          </div>
+          <h2 className="text-xl font-bold text-foreground">Key Points</h2>
+        </div>
+        <ul className="space-y-3">
+          {topic.keyPoints.map((point, index) => (
+            <li key={index} className="flex items-start gap-3">
+              <CheckCircle2 className={cn("mt-0.5 h-5 w-5 flex-shrink-0", `text-${colorClass}`)} />
+              <span className="text-foreground">{point}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* Example */}
+      <section className={cn(
+        "rounded-2xl border-2 p-6 sm:p-8",
+        `bg-${colorClass} border-${colorClass}`
+      )}>
+        <div className="mb-4 flex items-center gap-3">
+          <div className={cn(
+            "flex h-10 w-10 items-center justify-center rounded-xl",
+            `bg-${colorClass}`
+          )}>
+            <Lightbulb className={cn("h-5 w-5", `text-${colorClass}`)} />
+          </div>
+          <h2 className="text-xl font-bold text-foreground">{topic.example.title}</h2>
+        </div>
+        <div className="prose prose-lg max-w-none">
+          {topic.example.content.split('\n').map((line, index) => (
+            <p key={index} className="mb-2 leading-relaxed text-foreground">
+              {line}
+            </p>
+          ))}
+        </div>
+      </section>
+
+      {/* Exam Tips */}
+      <section className="rounded-2xl border-2 border-primary bg-accent p-6 shadow-card sm:p-8">
+        <div className="mb-4 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary">
+            <GraduationCap className="h-5 w-5 text-primary-foreground" />
+          </div>
+          <h2 className="text-xl font-bold text-foreground">WAEC/NECO Exam Tips</h2>
+        </div>
+        <ul className="space-y-3">
+          {topic.examTips.map((tip, index) => (
+            <li key={index} className="flex items-start gap-3">
+              <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                {index + 1}
+              </span>
+              <span className="text-foreground">{tip}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
     </div>
   );
 };

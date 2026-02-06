@@ -70,6 +70,13 @@ export interface TopicContent {
   };
   examTips: string[];
   diagram?: string;
+  keywords?: string[];
+  isAiEnhanced?: boolean;
+}
+
+export interface TopicSearchResult {
+  topic: TopicContent | null;
+  relatedTopics: TopicContent[];
 }
 
 export const sampleTopics: Record<string, TopicContent> = {
@@ -77,6 +84,7 @@ export const sampleTopics: Record<string, TopicContent> = {
   'photosynthesis': {
     title: 'Photosynthesis',
     subject: 'Biology',
+    keywords: ['plant', 'sunlight', 'chlorophyll', 'glucose', 'carbon dioxide', 'oxygen', 'leaves', 'green', 'food', 'energy'],
     definition: 'Photosynthesis is the process by which green plants and some other organisms use sunlight to synthesize foods from carbon dioxide and water. It generally involves the green pigment chlorophyll and generates oxygen as a byproduct.',
     explanation: `Photosynthesis is like a food factory inside plant leaves. When sunlight hits a leaf, special green parts called chloroplasts (which contain chlorophyll) capture that light energy. The plant then uses this energy to combine carbon dioxide (CO₂) from the air with water (H₂O) from the soil.
 
@@ -111,6 +119,7 @@ This means: 6 molecules of carbon dioxide + 6 molecules of water + light energy 
   'cell structure': {
     title: 'Cell Structure',
     subject: 'Biology',
+    keywords: ['cell', 'organelle', 'nucleus', 'membrane', 'cytoplasm', 'mitochondria', 'ribosome', 'prokaryote', 'eukaryote', 'organelles'],
     definition: 'A cell is the basic structural and functional unit of all living organisms. Cells contain specialized structures called organelles, each with specific functions that keep the cell alive and functioning.',
     explanation: `Think of a cell as a tiny factory with different departments, each doing a specific job. There are two main types of cells: prokaryotic (like bacteria - simpler, no nucleus) and eukaryotic (like plant and animal cells - more complex, with a nucleus).
 
@@ -151,6 +160,7 @@ Plant cells have additional structures:
   'genetics': {
     title: 'Genetics',
     subject: 'Biology',
+    keywords: ['gene', 'dna', 'chromosome', 'heredity', 'inheritance', 'allele', 'dominant', 'recessive', 'trait', 'mendel', 'punnett'],
     definition: 'Genetics is the study of heredity and variation - how traits are passed from parents to offspring through genes. Genes are segments of DNA that carry instructions for specific characteristics.',
     explanation: `Genetics explains why you might have your mother's eyes or your father's height. Here's how it works:
 
@@ -185,11 +195,101 @@ Plant cells have additional structures:
       'NECO often asks about blood group inheritance (ABO system)'
     ]
   },
+  'blood groups': {
+    title: 'Blood Groups',
+    subject: 'Biology',
+    keywords: ['blood', 'type', 'antigen', 'antibody', 'transfusion', 'rhesus', 'rh', 'a', 'b', 'o', 'ab', 'donor', 'recipient'],
+    definition: 'Blood groups are classifications of blood based on the presence or absence of specific antigens on the surface of red blood cells. The main systems are ABO and Rhesus (Rh).',
+    explanation: `Blood groups are determined by antigens (proteins) on red blood cells:
+
+**ABO Blood Group System**:
+- **Type A**: Has A antigens, produces anti-B antibodies
+- **Type B**: Has B antigens, produces anti-A antibodies
+- **Type AB**: Has both A and B antigens, no antibodies (Universal Recipient)
+- **Type O**: Has no antigens, produces both anti-A and anti-B antibodies (Universal Donor)
+
+**Rhesus (Rh) Factor**:
+- Rh positive (+): Has Rh antigen
+- Rh negative (-): Lacks Rh antigen
+
+**Blood Transfusion Rules**:
+Mixing incompatible blood causes agglutination (clumping), which can be fatal.
+- Type O- can donate to anyone (universal donor)
+- Type AB+ can receive from anyone (universal recipient)`,
+    keyPoints: [
+      'ABO system has four blood types: A, B, AB, O',
+      'Antigens are on red blood cells; antibodies are in plasma',
+      'Type O is the universal donor; Type AB is the universal recipient',
+      'Rh factor adds + or - to blood type',
+      'Blood type is inherited from parents',
+      'Incompatible transfusions cause agglutination',
+      'Blood type follows Mendelian inheritance'
+    ],
+    example: {
+      title: 'Blood Transfusion Compatibility',
+      content: 'A patient with Type B blood needs a transfusion:\n\n- Can receive from: Type B (same antigens) or Type O (no antigens)\n- Cannot receive from: Type A or Type AB (would cause clumping)\n\nThis is why blood typing is essential before any transfusion!'
+    },
+    examTips: [
+      'WAEC frequently tests blood group inheritance using Punnett squares',
+      'Know which blood types can donate to and receive from which',
+      'Understand the difference between antigens and antibodies',
+      'Questions about Rh factor and pregnancy complications may appear',
+      'Practice problems on blood group genetics (I^A, I^B, i alleles)',
+      'NECO often asks about the importance of blood typing'
+    ]
+  },
+  'skeletal system': {
+    title: 'Skeletal System',
+    subject: 'Biology',
+    keywords: ['bone', 'skeleton', 'joint', 'cartilage', 'skull', 'spine', 'muscle', 'ligament', 'tendon', 'marrow', 'calcium'],
+    definition: 'The skeletal system is the framework of bones and connective tissues that provides support, protection, and enables movement in the human body. Adults have 206 bones.',
+    explanation: `The skeletal system has several important functions:
+
+**Functions of the Skeleton**:
+1. **Support**: Provides framework for the body
+2. **Protection**: Skull protects brain, ribs protect heart and lungs
+3. **Movement**: Works with muscles to enable motion
+4. **Blood cell production**: Red marrow produces blood cells
+5. **Mineral storage**: Stores calcium and phosphorus
+
+**Types of Bones**:
+- Long bones (femur, humerus)
+- Short bones (carpals, tarsals)
+- Flat bones (skull, ribs)
+- Irregular bones (vertebrae)
+
+**Joints**:
+- Fixed/Immovable (skull sutures)
+- Slightly movable (vertebrae)
+- Freely movable (elbow, knee)`,
+    keyPoints: [
+      'Adults have 206 bones',
+      'Skeleton provides support, protection, and movement',
+      'Red bone marrow produces blood cells',
+      'Bones store calcium and phosphorus',
+      'Joints are classified by their movement capability',
+      'Ligaments connect bone to bone',
+      'Tendons connect muscle to bone'
+    ],
+    example: {
+      title: 'How Bones and Muscles Work Together',
+      content: 'When you bend your arm:\n1. The biceps muscle contracts (shortens)\n2. The triceps muscle relaxes\n3. The forearm bones (radius and ulna) move upward\n4. The elbow joint acts as the pivot\n\nThis is called antagonistic muscle action - muscles work in pairs!'
+    },
+    examTips: [
+      'WAEC asks you to name bones in specific body parts',
+      'Know the three types of joints with examples',
+      'Understand the difference between ligaments and tendons',
+      'Be able to explain how muscles and bones work together for movement',
+      'Questions on bone structure (compact vs spongy bone) are common',
+      'NECO may ask about disorders like rickets, arthritis, and osteoporosis'
+    ]
+  },
 
   // CHEMISTRY TOPICS
   'atomic structure': {
     title: 'Atomic Structure',
     subject: 'Chemistry',
+    keywords: ['atom', 'proton', 'neutron', 'electron', 'nucleus', 'shell', 'orbital', 'element', 'mass', 'number'],
     definition: 'Atomic structure refers to the arrangement of subatomic particles (protons, neutrons, and electrons) within an atom. Atoms consist of a dense nucleus containing protons and neutrons, surrounded by electrons in energy levels (shells).',
     explanation: `Every atom is made up of three main particles:
 
@@ -230,6 +330,7 @@ In a neutral atom, the number of protons equals the number of electrons, so the 
   'chemical bonding': {
     title: 'Chemical Bonding',
     subject: 'Chemistry',
+    keywords: ['bond', 'ionic', 'covalent', 'metallic', 'electron', 'share', 'transfer', 'ion', 'molecule', 'compound'],
     definition: 'Chemical bonding is the process by which atoms combine to form compounds. The main types are ionic bonds (transfer of electrons), covalent bonds (sharing of electrons), and metallic bonds (sea of electrons).',
     explanation: `Atoms bond because they want to be stable - to have full outer shells like noble gases. There are three main ways they achieve this:
 
@@ -275,6 +376,7 @@ In a neutral atom, the number of protons equals the number of electrons, so the 
   'acids and bases': {
     title: 'Acids and Bases',
     subject: 'Chemistry',
+    keywords: ['acid', 'base', 'alkali', 'ph', 'neutral', 'hydrogen', 'hydroxide', 'indicator', 'litmus', 'neutralization'],
     definition: 'Acids are substances that donate hydrogen ions (H⁺) in solution, while bases are substances that accept hydrogen ions or donate hydroxide ions (OH⁻). The pH scale measures how acidic or basic a solution is.',
     explanation: `**Acids** taste sour, turn blue litmus red, and have pH less than 7. Common examples: HCl (hydrochloric acid), H₂SO₄ (sulfuric acid), CH₃COOH (vinegar).
 
@@ -315,6 +417,7 @@ HCl + NaOH → NaCl + H₂O`,
   'quadratic equations': {
     title: 'Quadratic Equations',
     subject: 'Mathematics',
+    keywords: ['quadratic', 'equation', 'parabola', 'root', 'solution', 'factorize', 'formula', 'discriminant', 'x squared', 'polynomial'],
     definition: 'A quadratic equation is a second-degree polynomial equation in a single variable x, with the general form ax² + bx + c = 0, where a, b, and c are constants and a ≠ 0.',
     explanation: `A quadratic equation is any equation that can be written in the form ax² + bx + c = 0. The key feature is the x² term (x squared), which is why it's called "quadratic" (from Latin "quadratus" meaning square).
 
@@ -352,6 +455,7 @@ The solutions (also called roots) are the values of x that make the equation tru
   'trigonometry': {
     title: 'Trigonometry',
     subject: 'Mathematics',
+    keywords: ['sine', 'cosine', 'tangent', 'angle', 'triangle', 'sohcahtoa', 'hypotenuse', 'opposite', 'adjacent', 'degree', 'radian'],
     definition: 'Trigonometry is the branch of mathematics dealing with the relationships between the sides and angles of triangles, primarily using the ratios sine, cosine, and tangent.',
     explanation: `Trigonometry helps us find unknown sides and angles in triangles. The three main ratios are remembered using **SOHCAHTOA**:
 
@@ -394,6 +498,7 @@ Where:
   'statistics': {
     title: 'Statistics',
     subject: 'Mathematics',
+    keywords: ['mean', 'median', 'mode', 'average', 'data', 'frequency', 'standard deviation', 'variance', 'range', 'graph', 'chart'],
     definition: 'Statistics is the branch of mathematics concerned with collecting, organizing, analyzing, and interpreting numerical data. Key measures include mean, median, mode, and standard deviation.',
     explanation: `Statistics helps us make sense of data. The main measures of central tendency are:
 
@@ -438,6 +543,7 @@ Mean = Σx / n
   'motion': {
     title: 'Motion',
     subject: 'Physics',
+    keywords: ['speed', 'velocity', 'acceleration', 'displacement', 'distance', 'time', 'force', 'newton', 'kinematics', 'projectile'],
     definition: 'Motion is the change in position of an object with respect to time. It is described using quantities like displacement, velocity, acceleration, and time.',
     explanation: `Motion describes how objects move. Key quantities include:
 
@@ -482,6 +588,7 @@ Where: u = initial velocity, v = final velocity, a = acceleration, t = time, s =
   'waves': {
     title: 'Waves',
     subject: 'Physics',
+    keywords: ['wave', 'frequency', 'wavelength', 'amplitude', 'period', 'transverse', 'longitudinal', 'sound', 'light', 'crest', 'trough'],
     definition: 'A wave is a disturbance that transfers energy from one point to another without transferring matter. Waves can be classified as mechanical (need a medium) or electromagnetic (don\'t need a medium).',
     explanation: `Waves carry energy from one place to another. There are two main types:
 
@@ -525,6 +632,7 @@ Where: u = initial velocity, v = final velocity, a = acceleration, t = time, s =
   'electricity': {
     title: 'Electricity',
     subject: 'Physics',
+    keywords: ['electric', 'current', 'voltage', 'resistance', 'ohm', 'circuit', 'power', 'watt', 'ampere', 'volt', 'conductor', 'series', 'parallel'],
     definition: 'Electricity is the flow of electric charge (electrons) through a conductor. It involves concepts like current, voltage, resistance, and power.',
     explanation: `Electricity powers our modern world. Here are the key concepts:
 
@@ -571,6 +679,7 @@ P = IV = I²R = V²/R
   'essay writing': {
     title: 'Essay Writing',
     subject: 'English',
+    keywords: ['essay', 'write', 'paragraph', 'introduction', 'conclusion', 'thesis', 'argument', 'narrative', 'descriptive', 'expository'],
     definition: 'Essay writing is the art of expressing ideas in a structured, coherent, and engaging manner. Essays can be narrative, descriptive, argumentative, or expository in nature.',
     explanation: `Good essay writing follows a clear structure:
 
@@ -598,113 +707,74 @@ Each paragraph should have:
 - **Expository**: Explains or informs`,
     keyPoints: [
       'Always plan before writing - make an outline',
-      'Each paragraph should focus on one main idea',
-      'Use transition words to connect ideas',
-      'Show, don\'t just tell (use vivid descriptions)',
+      'Introduction should hook the reader and state your thesis',
+      'Each body paragraph should focus on one main idea',
+      'Use transition words to link paragraphs',
+      'Conclusion should not introduce new ideas',
       'Proofread for grammar, spelling, and punctuation',
-      'Stay within the word count',
-      'Write legibly if handwriting'
+      'Stay within the word limit (WAEC typically 450 words minimum)'
     ],
     example: {
-      title: 'Essay Introduction Example',
-      content: 'Topic: "The importance of education"\n\n"Education is the passport to the future, for tomorrow belongs to those who prepare for it today." This famous quote by Malcolm X captures the essence of why education matters. In Nigeria today, millions of young people are striving for quality education, recognizing it as the key to personal and national development. This essay will explore three fundamental reasons why education remains the most powerful tool for transforming lives and society.'
+      title: 'Essay Structure Example',
+      content: 'Topic: "The Importance of Education"\n\nIntroduction:\n- Hook: "Education is the key that unlocks..."\n- Background: Define education broadly\n- Thesis: Education is essential for personal and national development\n\nBody 1: Personal benefits (knowledge, skills, better jobs)\nBody 2: Social benefits (reduced crime, better health)\nBody 3: National benefits (economic growth, innovation)\n\nConclusion: Restate importance, call to prioritize education'
     },
     examTips: [
-      'WAEC allocates 50 marks to essay writing - take it seriously!',
-      'Spend 5-10 minutes planning before you start writing',
-      'Write in clear paragraphs with proper indentation',
-      'Use varied sentence structures to show language skills',
-      'Avoid informal language, slang, and abbreviations',
-      'Practice different essay types before the exam'
+      'WAEC allocates significant marks to essays - practice regularly',
+      'Read the question carefully - identify the type of essay required',
+      'Spend 5-10 minutes planning before writing',
+      'Use varied sentence structures and vocabulary',
+      'Avoid contractions (write "cannot" not "can\'t")',
+      'NECO often asks for letters and speeches - learn their formats too'
     ]
   },
   'figures of speech': {
     title: 'Figures of Speech',
     subject: 'English',
-    definition: 'Figures of speech are literary devices that use words in non-literal ways to create vivid imagery, add emphasis, or express ideas more effectively. They include simile, metaphor, personification, and many others.',
-    explanation: `Figures of speech make language more interesting and powerful. Here are the most important ones:
+    keywords: ['figure', 'speech', 'metaphor', 'simile', 'personification', 'hyperbole', 'irony', 'imagery', 'literary', 'device'],
+    definition: 'Figures of speech are literary devices used to create special effects by using words in non-literal or unusual ways. They make writing more vivid, interesting, and expressive.',
+    explanation: `Figures of speech add color and depth to language:
 
-**Simile**: Comparison using "like" or "as"
-"She runs like the wind" | "He is as brave as a lion"
+**Simile**: Compares two things using "like" or "as"
+- "She runs like the wind"
+- "His heart is as cold as ice"
 
-**Metaphor**: Direct comparison (saying something IS something else)
-"Life is a journey" | "Time is money"
+**Metaphor**: Compares directly without "like" or "as"
+- "Life is a journey"
+- "Time is money"
 
-**Personification**: Giving human qualities to non-human things
-"The sun smiled down on us" | "The wind whispered secrets"
+**Personification**: Gives human qualities to non-human things
+- "The wind whispered through the trees"
+- "Opportunity knocked at my door"
 
-**Hyperbole**: Exaggeration for effect
-"I've told you a million times" | "I'm so hungry I could eat a horse"
-
-**Oxymoron**: Contradictory terms together
-"Deafening silence" | "Living dead" | "Bitter sweet"
+**Hyperbole**: Extreme exaggeration
+- "I've told you a million times"
+- "I'm so hungry I could eat a horse"
 
 **Irony**: Saying the opposite of what you mean
-"Oh great, another Monday!" (when you hate Mondays)`,
+- "What lovely weather!" (during a storm)
+
+**Onomatopoeia**: Words that sound like what they describe
+- "buzz," "splash," "bang"`,
     keyPoints: [
       'Simile uses "like" or "as"; metaphor does not',
       'Personification gives human traits to non-human things',
-      'Hyperbole exaggerates; Litotes understates',
-      'Alliteration: repetition of initial consonant sounds',
-      'Onomatopoeia: words that sound like their meaning (buzz, splash)',
-      'Euphemism: mild term for something harsh',
-      'Know at least 15 figures of speech for WAEC/NECO'
+      'Hyperbole is intentional exaggeration for effect',
+      'Irony involves contrast between expectation and reality',
+      'Alliteration: repetition of consonant sounds',
+      'Assonance: repetition of vowel sounds',
+      'Euphemism: mild expression for harsh reality'
     ],
     example: {
       title: 'Identifying Figures of Speech',
-      content: '1. "The classroom was a zoo." → Metaphor\n2. "He fought like a tiger." → Simile\n3. "The stars danced in the sky." → Personification\n4. "Peter Piper picked a peck..." → Alliteration\n5. "The thunder roared angrily." → Personification + Onomatopoeia\n6. "She passed away." → Euphemism (for "died")'
+      content: '"The classroom was a zoo after the teacher left."\n→ Metaphor (comparing classroom to zoo)\n\n"Her smile was as bright as the sun."\n→ Simile (uses "as")\n\n"The old car coughed and spluttered."\n→ Personification (car given human actions)\n→ Onomatopoeia ("coughed," "spluttered")'
     },
     examTips: [
-      'WAEC always includes questions on figures of speech',
-      'Don\'t confuse simile and metaphor - look for "like" or "as"',
+      'WAEC often asks you to identify and explain figures of speech',
+      'Know the difference between simile and metaphor',
       'Practice identifying figures of speech in passages',
-      'Learn to use figures of speech in your own essays',
-      'Know the effect each figure of speech creates',
-      'NECO may ask you to explain the meaning of figurative expressions'
-    ]
-  },
-  'comprehension': {
-    title: 'Comprehension',
-    subject: 'English',
-    definition: 'Reading comprehension is the ability to read text, process it, and understand its meaning. It involves skills like identifying main ideas, making inferences, and understanding vocabulary in context.',
-    explanation: `Comprehension tests your understanding of written passages. Here's how to excel:
-
-**Reading Strategies**:
-1. **Skim first**: Read quickly to get the general idea
-2. **Read the questions**: Know what you're looking for
-3. **Read carefully**: Go through the passage thoroughly
-4. **Locate answers**: Find specific information in the text
-
-**Types of Questions**:
-- **Literal**: Answer is directly stated in the text
-- **Inferential**: You must "read between the lines"
-- **Vocabulary**: Meaning of words in context
-- **Summary**: Condense the main ideas
-
-**Common Question Words**:
-- "According to the passage..." → Find the exact words
-- "What does the writer suggest..." → Inference required
-- "In your own words..." → Don't copy; rephrase`,
-    keyPoints: [
-      'Read the passage at least twice',
-      'Underline key words in questions',
-      'Use context clues for vocabulary questions',
-      'Don\'t add outside knowledge - stick to the passage',
-      'Answer in complete sentences unless told otherwise',
-      'Manage your time - don\'t spend too long on one question',
-      'For "in your own words" - you must paraphrase'
-    ],
-    example: {
-      title: 'Answering Vocabulary Questions',
-      content: 'Passage: "The ancient building, though dilapidated, still stood majestically on the hill."\n\nQuestion: What is the meaning of "dilapidated" as used in the passage?\n\nLook at context clues:\n- "ancient" suggests old\n- "though" suggests contrast\n- "still stood majestically" suggests it was impressive despite something\n\nAnswer: "Dilapidated" means in a state of disrepair or ruin due to age or neglect. The building was old and worn down, but still impressive.'
-    },
-    examTips: [
-      'WAEC comprehension carries significant marks - practice regularly',
-      'Read newspapers and books to improve reading speed and vocabulary',
-      'For summary questions, stick to the required number of sentences',
-      'Use your own words unless asked to quote from the passage',
-      'Pay attention to punctuation - it affects meaning',
-      'NECO often includes passages on Nigerian topics - read widely'
+      'Use figures of speech in your essays to score higher',
+      'NECO may ask you to explain the effect of a figure of speech',
+      'Learn less common ones: oxymoron, paradox, litotes, euphemism'
     ]
   },
 
@@ -712,91 +782,94 @@ Each paragraph should have:
   'matrices': {
     title: 'Matrices',
     subject: 'Further Mathematics',
-    definition: 'A matrix is a rectangular array of numbers, symbols, or expressions arranged in rows and columns. Matrices are used to solve systems of linear equations, perform transformations, and represent data.',
-    explanation: `A matrix is written in rows and columns. The order of a matrix is rows × columns.
+    keywords: ['matrix', 'determinant', 'inverse', 'multiplication', 'addition', 'row', 'column', '2x2', '3x3', 'linear', 'equation'],
+    definition: 'A matrix is a rectangular array of numbers arranged in rows and columns. Matrices are used to solve systems of linear equations and perform various mathematical operations.',
+    explanation: `A matrix is like a spreadsheet of numbers:
 
-**Basic Operations**:
+**Matrix Notation**:
+A 2×2 matrix: [a b]
+              [c d]
+
+**Matrix Operations**:
 
 **Addition/Subtraction**: Add/subtract corresponding elements (matrices must be same size)
 
-**Scalar Multiplication**: Multiply each element by the scalar
+**Scalar Multiplication**: Multiply every element by the scalar
 
 **Matrix Multiplication**: 
 - Only possible if columns of first = rows of second
-- (m×n) × (n×p) = (m×p)
-- NOT commutative: AB ≠ BA
+- Multiply row by column and add
 
-**Determinant of 2×2 matrix**:
-|a  b|
-|c  d|  = ad - bc
+**Determinant** (for 2×2 matrix):
+det[a b] = ad - bc
+   [c d]
 
-**Inverse of 2×2 matrix**:
-A⁻¹ = (1/det) × |d  -b|
-                |-c   a|
-
-**Identity Matrix**: Like "1" for matrices
-I = |1  0|
-    |0  1|  → A × I = A`,
+**Inverse Matrix** (for 2×2):
+If A = [a b], then A⁻¹ = (1/det)[d  -b]
+      [c d]               [-c   a]`,
     keyPoints: [
-      'Order of matrix: rows × columns',
-      'Matrices can only be added/subtracted if same order',
-      'For multiplication: columns of first = rows of second',
-      'Matrix multiplication is NOT commutative',
+      'Matrix order is rows × columns',
+      'Addition requires same dimensions',
+      'Multiplication: columns of A = rows of B',
+      'Matrix multiplication is NOT commutative (AB ≠ BA)',
       'Determinant of 2×2: ad - bc',
-      'A matrix has an inverse only if determinant ≠ 0',
-      'Identity matrix × any matrix = same matrix'
+      'A matrix has no inverse if determinant = 0',
+      'Used to solve simultaneous equations'
     ],
     example: {
-      title: 'Finding Matrix Inverse',
-      content: 'Find the inverse of A = |3  2|\n                        |5  4|\n\nStep 1: Find determinant\ndet = (3)(4) - (2)(5) = 12 - 10 = 2\n\nStep 2: Apply formula\nA⁻¹ = (1/2) × |4   -2|\n              |-5   3|\n\nA⁻¹ = |2    -1 |\n      |-2.5  1.5|'
+      title: 'Solving Simultaneous Equations',
+      content: 'Solve: 2x + 3y = 8\n       4x + y = 6\n\nMatrix form: [2 3][x] = [8]\n            [4 1][y]   [6]\n\nDeterminant = (2)(1) - (3)(4) = 2 - 12 = -10\n\nInverse: (1/-10)[1  -3] = [-0.1  0.3]\n               [-4   2]   [0.4  -0.2]\n\n[x] = [-0.1  0.3][8] = [-0.8 + 1.8] = [1]\n[y]   [0.4  -0.2][6]   [3.2 - 1.2]   [2]\n\nSolution: x = 1, y = 2'
     },
     examTips: [
-      'Know how to multiply matrices step by step',
-      'WAEC loves inverse matrix questions',
-      'Remember: determinant = 0 means no inverse exists',
+      'WAEC frequently asks for determinant and inverse of 2×2 matrices',
       'Practice solving simultaneous equations using matrices',
-      'Learn to find the transpose of a matrix',
-      'Check your inverse: A × A⁻¹ should equal identity matrix'
+      'Remember: if determinant = 0, no inverse exists',
+      'Know how to perform matrix addition and multiplication',
+      'NECO may ask for 3×3 matrix operations',
+      'Always check your inverse: A × A⁻¹ should equal identity matrix'
     ]
   },
   'complex numbers': {
     title: 'Complex Numbers',
     subject: 'Further Mathematics',
-    definition: 'Complex numbers are numbers of the form a + bi, where a and b are real numbers, and i is the imaginary unit defined by i² = -1. They extend the real number system to solve equations like x² + 1 = 0.',
-    explanation: `Complex numbers have two parts:
-- **Real part** (a): The regular number part
-- **Imaginary part** (bi): Contains the imaginary unit i
+    keywords: ['complex', 'imaginary', 'real', 'i', 'conjugate', 'argand', 'modulus', 'argument', 'polar', 'cartesian'],
+    definition: 'Complex numbers are numbers of the form a + bi, where a is the real part, b is the imaginary part, and i = √(-1). They extend the real number system to solve equations like x² + 1 = 0.',
+    explanation: `Complex numbers solve equations that have no real solutions:
 
-**The imaginary unit**: i = √(-1), so i² = -1
+**The Imaginary Unit**: i = √(-1), so i² = -1
+
+**Standard Form**: z = a + bi
+- a is the real part (Re(z))
+- b is the imaginary part (Im(z))
 
 **Operations**:
 - **Addition**: (a + bi) + (c + di) = (a+c) + (b+d)i
 - **Subtraction**: (a + bi) - (c + di) = (a-c) + (b-d)i
-- **Multiplication**: Expand and use i² = -1
+- **Multiplication**: Use FOIL, remember i² = -1
 - **Division**: Multiply by conjugate
 
-**Conjugate**: The conjugate of (a + bi) is (a - bi)
+**Conjugate**: If z = a + bi, then z* = a - bi
 
-**Modulus**: |a + bi| = √(a² + b²)
+**Modulus**: |z| = √(a² + b²)
 
-**Argand Diagram**: Plot complex numbers on a plane (real axis horizontal, imaginary axis vertical)`,
+**Argand Diagram**: Complex numbers plotted on a plane
+- x-axis = real, y-axis = imaginary`,
     keyPoints: [
-      'i = √(-1) and i² = -1',
-      'i³ = -i and i⁴ = 1 (cycle repeats)',
+      'i = √(-1), i² = -1, i³ = -i, i⁴ = 1 (cycle repeats)',
       'Conjugate of a + bi is a - bi',
+      'Product of conjugates gives real number: z × z* = |z|²',
+      'Modulus |z| = √(a² + b²)',
       'To divide, multiply by conjugate of denominator',
-      'Modulus is the distance from origin',
-      'Complex numbers can be written in polar form',
-      'Every polynomial equation has a complex root'
+      'Argand diagram shows complex numbers as points',
+      'Polar form: z = r(cos θ + i sin θ)'
     ],
     example: {
-      title: 'Division of Complex Numbers',
-      content: 'Divide (3 + 2i) by (1 + i)\n\n(3 + 2i) ÷ (1 + i)\n\nMultiply by conjugate:\n= (3 + 2i)(1 - i) / (1 + i)(1 - i)\n\nNumerator: 3(1) + 3(-i) + 2i(1) + 2i(-i)\n= 3 - 3i + 2i - 2i²\n= 3 - i - 2(-1) = 3 - i + 2 = 5 - i\n\nDenominator: 1² - i² = 1 - (-1) = 2\n\nAnswer: (5 - i)/2 = 2.5 - 0.5i'
+      title: 'Complex Number Division',
+      content: 'Divide (3 + 4i) by (1 - 2i):\n\nMultiply by conjugate of denominator:\n(3 + 4i)   (1 + 2i)\n-------- × --------\n(1 - 2i)   (1 + 2i)\n\nNumerator: (3 + 4i)(1 + 2i) = 3 + 6i + 4i + 8i² = 3 + 10i - 8 = -5 + 10i\nDenominator: (1 - 2i)(1 + 2i) = 1 - 4i² = 1 + 4 = 5\n\nResult: (-5 + 10i)/5 = -1 + 2i'
     },
     examTips: [
-      'Remember the powers of i cycle every 4: i, -1, -i, 1, ...',
-      'WAEC often asks for the square root of negative numbers',
-      'Always simplify to the form a + bi',
+      'Remember the powers of i cycle: i, -1, -i, 1, i, ...',
+      'WAEC often asks you to simplify complex expressions',
       'For division, always multiply by the conjugate',
       'Practice plotting complex numbers on Argand diagrams',
       'Know how to find modulus and argument'
@@ -805,6 +878,7 @@ I = |1  0|
   'vectors': {
     title: 'Vectors',
     subject: 'Further Mathematics',
+    keywords: ['vector', 'scalar', 'magnitude', 'direction', 'dot product', 'position', 'unit', 'component', 'i', 'j', 'k'],
     definition: 'A vector is a quantity that has both magnitude (size) and direction. Unlike scalars (which only have magnitude), vectors are represented by arrows and can be added, subtracted, and multiplied.',
     explanation: `Vectors are written as column vectors or in component form:
 **a** = (x, y) or **a** = xi + yj
@@ -854,17 +928,80 @@ I = |1  0|
   }
 };
 
-export function searchTopics(query: string, subjectId?: string): TopicContent | null {
+// Enhanced search with keyword and partial matching
+export function searchTopics(query: string, subjectId?: string): TopicSearchResult {
   const searchQuery = query.toLowerCase().trim();
   
+  // First, try exact match
   for (const [key, topic] of Object.entries(sampleTopics)) {
     if (key.includes(searchQuery) || topic.title.toLowerCase().includes(searchQuery)) {
       if (!subjectId || topic.subject.toLowerCase().replace(' ', '-') === subjectId || 
           topic.subject.toLowerCase() === subjectId) {
-        return topic;
+        return { topic, relatedTopics: [] };
       }
     }
   }
   
-  return null;
+  // If no exact match, find related topics using keyword and partial matching
+  const relatedTopics: TopicContent[] = [];
+  const queryWords = searchQuery.split(/\s+/);
+  
+  for (const [, topic] of Object.entries(sampleTopics)) {
+    // Filter by subject if specified
+    if (subjectId && topic.subject.toLowerCase().replace(' ', '-') !== subjectId && 
+        topic.subject.toLowerCase() !== subjectId) {
+      continue;
+    }
+    
+    let score = 0;
+    
+    // Check keywords
+    if (topic.keywords) {
+      for (const keyword of topic.keywords) {
+        for (const queryWord of queryWords) {
+          if (keyword.includes(queryWord) || queryWord.includes(keyword)) {
+            score += 2;
+          }
+        }
+      }
+    }
+    
+    // Check title words
+    const titleWords = topic.title.toLowerCase().split(/\s+/);
+    for (const titleWord of titleWords) {
+      for (const queryWord of queryWords) {
+        if (titleWord.includes(queryWord) || queryWord.includes(titleWord)) {
+          score += 3;
+        }
+      }
+    }
+    
+    // Check definition for partial matches
+    const definitionLower = topic.definition.toLowerCase();
+    for (const queryWord of queryWords) {
+      if (definitionLower.includes(queryWord)) {
+        score += 1;
+      }
+    }
+    
+    if (score > 0) {
+      relatedTopics.push({ ...topic, _score: score } as TopicContent & { _score: number });
+    }
+  }
+  
+  // Sort by score and take top 5
+  const sortedRelated = relatedTopics
+    .sort((a, b) => ((b as any)._score || 0) - ((a as any)._score || 0))
+    .slice(0, 5)
+    .map(({ _score, ...topic }: any) => topic as TopicContent);
+  
+  return { topic: null, relatedTopics: sortedRelated };
+}
+
+// Get all topics for a subject (for suggestions)
+export function getSubjectTopics(subjectId: string): TopicContent[] {
+  return Object.values(sampleTopics).filter(
+    topic => topic.subject.toLowerCase().replace(' ', '-') === subjectId || 
+             topic.subject.toLowerCase() === subjectId
+  );
 }

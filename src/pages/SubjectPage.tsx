@@ -9,7 +9,8 @@ import {
   Pi,
   type LucideIcon 
 } from 'lucide-react';
-import { subjects, searchTopics, TopicContent } from '@/data/subjects';
+import { subjects, searchTopics, TopicContent, TopicSearchResult } from '@/data/subjects';
+import { USE_AI, enhanceTopicWithAI } from '@/services/aiService';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SearchBar from '@/components/SearchBar';
@@ -36,24 +37,43 @@ const SubjectPage = () => {
   const [lookupState, setLookupState] = useState<LookupState>('initial');
   const [lookupQuery, setLookupQuery] = useState('');
   const [topicResult, setTopicResult] = useState<TopicContent | null>(null);
+  const [relatedTopics, setRelatedTopics] = useState<TopicContent[]>([]);
+  const [isAiLoading, setIsAiLoading] = useState(false);
 
   const subject = subjects.find(s => s.id === subjectId);
 
-  const handleLookup = useCallback((query: string) => {
+  const handleLookup = useCallback(async (query: string) => {
     setLookupQuery(query);
     setLookupState('loading');
+    setRelatedTopics([]);
     
     // Simulate intelligent lookup delay
-    setTimeout(() => {
-      const result = searchTopics(query, subjectId);
-      if (result) {
-        setTopicResult(result);
-        setLookupState('results');
-      } else {
-        setTopicResult(null);
-        setLookupState('no-results');
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    const searchResult: TopicSearchResult = searchTopics(query, subjectId);
+    
+    if (searchResult.topic) {
+      // Show mock data immediately
+      setTopicResult(searchResult.topic);
+      setLookupState('results');
+      
+      // If AI mode is enabled, enhance the content
+      if (USE_AI) {
+        setIsAiLoading(true);
+        try {
+          const { topic: enhancedTopic } = await enhanceTopicWithAI(searchResult.topic, true);
+          setTopicResult(enhancedTopic);
+        } catch (error) {
+          console.warn('AI enhancement failed:', error);
+        } finally {
+          setIsAiLoading(false);
+        }
       }
-    }, 1500);
+    } else {
+      setTopicResult(null);
+      setRelatedTopics(searchResult.relatedTopics);
+      setLookupState('no-results');
+    }
   }, [subjectId]);
 
   // Auto-lookup when topic query param is present (from bookmarks)
@@ -141,11 +161,21 @@ const SubjectPage = () => {
               )}
               
               {lookupState === 'no-results' && (
-                <EmptyState type="no-results" query={lookupQuery} colorClass={subject.colorClass} />
+                <EmptyState 
+                  type="no-results" 
+                  query={lookupQuery} 
+                  colorClass={subject.colorClass}
+                  relatedTopics={relatedTopics}
+                  onTopicClick={handleSuggestedTopicClick}
+                />
               )}
               
               {lookupState === 'results' && topicResult && (
-                <TopicResult topic={topicResult} colorClass={subject.colorClass} />
+                <TopicResult 
+                  topic={topicResult} 
+                  colorClass={subject.colorClass}
+                  isAiLoading={isAiLoading}
+                />
               )}
             </div>
           </div>

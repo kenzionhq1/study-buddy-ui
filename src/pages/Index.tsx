@@ -10,16 +10,16 @@ const Index = () => {
       
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="py-12 sm:py-16 lg:py-20">
+        <section className="py-10 sm:py-14 lg:py-16">
           <div className="container">
-            <div className="mx-auto max-w-3xl text-center">
-              <h1 className="mb-4 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+            <div className="mx-auto max-w-3xl text-center animate-fade-in">
+              <h1 className="mb-3 text-3xl font-extrabold tracking-tight text-foreground sm:mb-4 sm:text-4xl lg:text-5xl">
                 Learn any topic,{' '}
                 <span className="text-primary">clearly explained</span>
               </h1>
-              <p className="text-lg text-muted-foreground sm:text-xl">
+              <p className="text-base text-muted-foreground sm:text-lg lg:text-xl">
                 Your personal study companion for WAEC and NECO success. 
-                Select a subject and look up any topic to get detailed explanations, 
+                Select a subject and look up any topic for detailed explanations, 
                 key points, examples, and exam tips.
               </p>
             </div>
@@ -27,12 +27,12 @@ const Index = () => {
         </section>
 
         {/* Subjects Grid */}
-        <section className="pb-16 sm:pb-20 lg:pb-24">
+        <section className="pb-12 sm:pb-16 lg:pb-20">
           <div className="container">
-            <h2 className="mb-8 text-center text-2xl font-bold text-foreground sm:text-3xl">
+            <h2 className="mb-6 text-center text-xl font-bold text-foreground sm:mb-8 sm:text-2xl lg:text-3xl">
               Choose a Subject
             </h2>
-            <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3">
+            <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3 lg:gap-6">
               {subjects.map((subject, index) => (
                 <SubjectCard key={subject.id} subject={subject} index={index} />
               ))}

@@ -19,17 +19,17 @@ const EmptyState = ({
 }: EmptyStateProps) => {
   if (type === 'initial') {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center">
+      <div className="flex flex-col items-center justify-center py-12 text-center sm:py-16 animate-fade-in">
         <div className={cn(
-          "mb-6 flex h-20 w-20 items-center justify-center rounded-2xl",
+          "mb-5 flex h-16 w-16 items-center justify-center rounded-2xl sm:mb-6 sm:h-20 sm:w-20",
           `bg-${colorClass}`
         )}>
-          <Search className={cn("h-10 w-10", `text-${colorClass}`)} />
+          <Search className={cn("h-8 w-8 sm:h-10 sm:w-10", `text-${colorClass}`)} />
         </div>
-        <h3 className="mb-2 text-xl font-semibold text-foreground">
+        <h3 className="mb-2 text-lg font-semibold text-foreground sm:text-xl">
           Look up a topic
         </h3>
-        <p className="max-w-sm text-muted-foreground">
+        <p className="max-w-sm text-sm text-muted-foreground sm:text-base">
           Enter a topic name above to get a detailed explanation with examples and exam tips.
         </p>
       </div>
@@ -37,19 +37,18 @@ const EmptyState = ({
   }
 
   return (
-    <div className="flex flex-col items-center justify-center py-16 text-center animate-fade-in">
-      <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-muted">
-        <BookX className="h-10 w-10 text-muted-foreground" />
+    <div className="flex flex-col items-center justify-center py-12 text-center animate-fade-in sm:py-16">
+      <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-muted sm:mb-6 sm:h-20 sm:w-20">
+        <BookX className="h-8 w-8 text-muted-foreground sm:h-10 sm:w-10" />
       </div>
-      <h3 className="mb-2 text-xl font-semibold text-foreground">
+      <h3 className="mb-2 text-lg font-semibold text-foreground sm:text-xl">
         Topic not found
       </h3>
-      <p className="max-w-sm text-muted-foreground">
-        We couldn't find any results for "<span className="font-medium text-foreground">{query}</span>". 
-        Try looking up a different topic or check your spelling.
+      <p className="max-w-sm text-sm text-muted-foreground sm:text-base">
+        We couldn't find an exact match for "<span className="font-medium text-foreground">{query}</span>".
       </p>
       
-      {/* Related Topics Section */}
+      {/* Related Topics Section - Always show suggestions */}
       {relatedTopics.length > 0 && (
         <div className="mt-8 w-full max-w-md animate-fade-in">
           <div className="flex items-center justify-center gap-2 mb-4">
@@ -59,16 +58,18 @@ const EmptyState = ({
             </p>
           </div>
           <div className="flex flex-wrap justify-center gap-2">
-            {relatedTopics.map((topic) => (
+            {relatedTopics.slice(0, 5).map((topic, index) => (
               <button
                 key={topic.title}
                 onClick={() => onTopicClick?.(topic.title)}
                 className={cn(
                   "rounded-full border-2 px-4 py-2 text-sm font-medium transition-all duration-200",
-                  "hover:-translate-y-0.5 hover:shadow-md",
+                  "hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
                   `border-${colorClass} bg-${colorClass}/10 text-foreground`,
-                  `hover:bg-${colorClass}/20`
+                  `hover:bg-${colorClass}/20 focus-visible:ring-${colorClass}`,
+                  "animate-fade-in"
                 )}
+                style={{ animationDelay: `${index * 0.05}s` }}
               >
                 {topic.title}
               </button>
@@ -80,10 +81,11 @@ const EmptyState = ({
         </div>
       )}
       
+      {/* Fallback suggestions when no related topics found */}
       {relatedTopics.length === 0 && (
-        <div className="mt-6">
+        <div className="mt-6 animate-fade-in">
           <p className="text-sm text-muted-foreground">
-            💡 Try looking up: <span className="font-medium">Photosynthesis</span>, <span className="font-medium">Quadratic Equations</span>, or <span className="font-medium">Atomic Structure</span>
+            💡 Try searching for: <span className="font-medium">Photosynthesis</span>, <span className="font-medium">Quadratic Equations</span>, or <span className="font-medium">Atomic Structure</span>
           </p>
         </div>
       )}

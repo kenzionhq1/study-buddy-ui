@@ -928,80 +928,220 @@ If A = [a b], then A⁻¹ = (1/det)[d  -b]
   }
 };
 
-// Enhanced search with keyword and partial matching
+import Fuse from 'fuse.js';
+
+// Build searchable index with flattened keywords for better matching
+interface SearchableItem {
+  topic: TopicContent;
+  searchableTitle: string;
+  searchableKeywords: string;
+  searchableDefinition: string;
+  searchableExplanation: string;
+}
+
+function buildSearchIndex(subjectId?: string): SearchableItem[] {
+  return Object.values(sampleTopics)
+    .filter(topic => {
+      if (!subjectId) return true;
+      const normalizedSubject = topic.subject.toLowerCase().replace(/\s+/g, '-');
+      return normalizedSubject === subjectId || topic.subject.toLowerCase() === subjectId;
+    })
+    .map(topic => ({
+      topic,
+      searchableTitle: topic.title.toLowerCase(),
+      searchableKeywords: (topic.keywords || []).join(' ').toLowerCase(),
+      searchableDefinition: topic.definition.toLowerCase(),
+      searchableExplanation: topic.explanation.toLowerCase().slice(0, 500) // Limit for performance
+    }));
+}
+
+// Configure Fuse.js for intelligent fuzzy search
+function createFuseInstance(items: SearchableItem[]): Fuse<SearchableItem> {
+  return new Fuse(items, {
+    keys: [
+      { name: 'searchableTitle', weight: 0.4 },
+      { name: 'searchableKeywords', weight: 0.35 },
+      { name: 'searchableDefinition', weight: 0.15 },
+      { name: 'searchableExplanation', weight: 0.1 }
+    ],
+    threshold: 0.4, // Lower = more strict, Higher = more fuzzy (0.4 allows good typo tolerance)
+    distance: 100, // How close the match must be to the pattern
+    minMatchCharLength: 2, // Allow very short queries
+    includeScore: true,
+    ignoreLocation: true, // Search anywhere in the string
+    useExtendedSearch: true,
+    findAllMatches: true
+  });
+}
+
+// Levenshtein distance for additional fuzzy matching
+function levenshteinDistance(str1: string, str2: string): number {
+  const m = str1.length;
+  const n = str2.length;
+  const dp: number[][] = Array(m + 1).fill(null).map(() => Array(n + 1).fill(0));
+
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      if (str1[i - 1] === str2[j - 1]) {
+        dp[i][j] = dp[i - 1][j - 1];
+      } else {
+        dp[i][j] = 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+      }
+    }
+  }
+  return dp[m][n];
+}
+
+// Calculate similarity score (0-1) using Levenshtein
+function similarityScore(query: string, target: string): number {
+  const maxLen = Math.max(query.length, target.length);
+  if (maxLen === 0) return 1;
+  return 1 - levenshteinDistance(query, target) / maxLen;
+}
+
+// Enhanced search with Fuse.js fuzzy matching, phrase decomposition, and fallback
 export function searchTopics(query: string, subjectId?: string): TopicSearchResult {
   const searchQuery = query.toLowerCase().trim();
   
-  // First, try exact match
-  for (const [key, topic] of Object.entries(sampleTopics)) {
-    if (key.includes(searchQuery) || topic.title.toLowerCase().includes(searchQuery)) {
-      if (!subjectId || topic.subject.toLowerCase().replace(' ', '-') === subjectId || 
-          topic.subject.toLowerCase() === subjectId) {
-        return { topic, relatedTopics: [] };
-      }
-    }
+  if (!searchQuery) {
+    return { topic: null, relatedTopics: [] };
+  }
+
+  const items = buildSearchIndex(subjectId);
+  const fuse = createFuseInstance(items);
+  
+  // Step 1: Try exact title match first
+  const exactMatch = items.find(item => 
+    item.searchableTitle === searchQuery ||
+    item.topic.title.toLowerCase() === searchQuery
+  );
+  
+  if (exactMatch) {
+    return { topic: exactMatch.topic, relatedTopics: [] };
   }
   
-  // If no exact match, find related topics using keyword and partial matching
-  const relatedTopics: TopicContent[] = [];
-  const queryWords = searchQuery.split(/\s+/);
+  // Step 2: Try partial title match (e.g., "photo" matches "photosynthesis")
+  const partialTitleMatch = items.find(item =>
+    item.searchableTitle.includes(searchQuery) ||
+    searchQuery.includes(item.searchableTitle)
+  );
   
-  for (const [, topic] of Object.entries(sampleTopics)) {
-    // Filter by subject if specified
-    if (subjectId && topic.subject.toLowerCase().replace(' ', '-') !== subjectId && 
-        topic.subject.toLowerCase() !== subjectId) {
-      continue;
-    }
-    
+  if (partialTitleMatch) {
+    return { topic: partialTitleMatch.topic, relatedTopics: [] };
+  }
+  
+  // Step 3: Fuse.js fuzzy search
+  const fuseResults = fuse.search(searchQuery);
+  
+  // If we have a very strong match (score < 0.2), treat it as the primary result
+  if (fuseResults.length > 0 && fuseResults[0].score !== undefined && fuseResults[0].score < 0.2) {
+    const relatedTopics = fuseResults.slice(1, 6).map(r => r.item.topic);
+    return { topic: fuseResults[0].item.topic, relatedTopics };
+  }
+  
+  // Step 4: Phrase decomposition - split query into words and search each
+  const queryWords = searchQuery.split(/\s+/).filter(w => w.length >= 2);
+  const wordMatchScores = new Map<TopicContent, number>();
+  
+  for (const item of items) {
     let score = 0;
     
-    // Check keywords
-    if (topic.keywords) {
-      for (const keyword of topic.keywords) {
-        for (const queryWord of queryWords) {
-          if (keyword.includes(queryWord) || queryWord.includes(keyword)) {
-            score += 2;
-          }
-        }
+    for (const word of queryWords) {
+      // Check title
+      if (item.searchableTitle.includes(word)) score += 10;
+      
+      // Check keywords
+      const keywords = item.topic.keywords || [];
+      for (const keyword of keywords) {
+        if (keyword.includes(word) || word.includes(keyword)) score += 5;
+        // Fuzzy keyword match
+        if (similarityScore(word, keyword) > 0.7) score += 3;
       }
-    }
-    
-    // Check title words
-    const titleWords = topic.title.toLowerCase().split(/\s+/);
-    for (const titleWord of titleWords) {
-      for (const queryWord of queryWords) {
-        if (titleWord.includes(queryWord) || queryWord.includes(titleWord)) {
-          score += 3;
-        }
-      }
-    }
-    
-    // Check definition for partial matches
-    const definitionLower = topic.definition.toLowerCase();
-    for (const queryWord of queryWords) {
-      if (definitionLower.includes(queryWord)) {
-        score += 1;
-      }
+      
+      // Check definition
+      if (item.searchableDefinition.includes(word)) score += 2;
+      
+      // Check explanation
+      if (item.searchableExplanation.includes(word)) score += 1;
     }
     
     if (score > 0) {
-      relatedTopics.push({ ...topic, _score: score } as TopicContent & { _score: number });
+      wordMatchScores.set(item.topic, score);
     }
   }
   
-  // Sort by score and take top 5
-  const sortedRelated = relatedTopics
-    .sort((a, b) => ((b as any)._score || 0) - ((a as any)._score || 0))
-    .slice(0, 5)
-    .map(({ _score, ...topic }: any) => topic as TopicContent);
+  // Step 5: Additional fuzzy matching using Levenshtein for typo correction
+  for (const item of items) {
+    const titleWords = item.searchableTitle.split(/\s+/);
+    const keywords = item.topic.keywords || [];
+    
+    for (const queryWord of queryWords) {
+      // Check each title word for similar spelling
+      for (const titleWord of titleWords) {
+        const sim = similarityScore(queryWord, titleWord);
+        if (sim > 0.65) { // 65% similarity threshold for typos
+          const currentScore = wordMatchScores.get(item.topic) || 0;
+          wordMatchScores.set(item.topic, currentScore + sim * 8);
+        }
+      }
+      
+      // Check keywords for similar spelling
+      for (const keyword of keywords) {
+        const sim = similarityScore(queryWord, keyword);
+        if (sim > 0.65) {
+          const currentScore = wordMatchScores.get(item.topic) || 0;
+          wordMatchScores.set(item.topic, currentScore + sim * 5);
+        }
+      }
+    }
+  }
   
-  return { topic: null, relatedTopics: sortedRelated };
+  // Combine Fuse results with word match results
+  for (const result of fuseResults) {
+    const currentScore = wordMatchScores.get(result.item.topic) || 0;
+    // Convert Fuse score (lower is better) to our scoring system
+    const fuseBonus = (1 - (result.score || 0)) * 15;
+    wordMatchScores.set(result.item.topic, currentScore + fuseBonus);
+  }
+  
+  // Sort by combined score
+  const sortedResults = Array.from(wordMatchScores.entries())
+    .sort((a, b) => b[1] - a[1])
+    .map(([topic]) => topic);
+  
+  // If we have a clear winner (significantly higher score), return it as primary
+  if (sortedResults.length > 0 && wordMatchScores.get(sortedResults[0])! > 10) {
+    const topScore = wordMatchScores.get(sortedResults[0])!;
+    const secondScore = sortedResults[1] ? wordMatchScores.get(sortedResults[1])! : 0;
+    
+    // If top result is significantly better than second, it's the primary result
+    if (topScore > secondScore * 1.5 && topScore > 15) {
+      return { 
+        topic: sortedResults[0], 
+        relatedTopics: sortedResults.slice(1, 6) 
+      };
+    }
+  }
+  
+  // Return as suggestions (no primary result, but related topics)
+  const relatedTopics = sortedResults.slice(0, 6);
+  
+  // Step 6: If still no results, return ALL topics for the subject as fallback
+  if (relatedTopics.length === 0) {
+    const allTopics = items.slice(0, 6).map(item => item.topic);
+    return { topic: null, relatedTopics: allTopics };
+  }
+  
+  return { topic: null, relatedTopics };
 }
 
 // Get all topics for a subject (for suggestions)
 export function getSubjectTopics(subjectId: string): TopicContent[] {
   return Object.values(sampleTopics).filter(
-    topic => topic.subject.toLowerCase().replace(' ', '-') === subjectId || 
+    topic => topic.subject.toLowerCase().replace(/\s+/g, '-') === subjectId || 
              topic.subject.toLowerCase() === subjectId
   );
 }

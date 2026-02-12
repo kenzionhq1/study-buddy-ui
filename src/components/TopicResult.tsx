@@ -7,8 +7,11 @@ import {
   CheckCircle2,
   Bookmark,
   BookmarkCheck,
-  Sparkles
+  Sparkles,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
+import { useState } from 'react';
 import { TopicContent } from '@/data/subjects';
 import { useBookmarks } from '@/hooks/useBookmarks';
 import { cn } from '@/lib/utils';
@@ -24,40 +27,123 @@ const TopicResult = ({ topic, colorClass = 'primary', isAiLoading = false }: Top
   const { isBookmarked, toggleBookmark } = useBookmarks();
   const bookmarked = isBookmarked(topic.title);
 
+  const [currentPage, setCurrentPage] = useState(0);
+  const [isFlipping, setIsFlipping] = useState(false);
+
+  const pages = [
+    {
+      id: "definition",
+      title: "Definition",
+      icon: <BookOpen className="h-5 w-5 text-primary" />,
+      content: (
+        <p className="text-base leading-relaxed sm:text-lg">
+          {topic.definition}
+        </p>
+      ),
+    },
+    {
+      id: "explanation",
+      title: "Detailed Explanation",
+      icon: <FileText className="h-5 w-5 text-primary" />,
+      content: topic.explanation.split('\n\n').map((p, i) => (
+        <p key={i} className="mb-4 last:mb-0 leading-relaxed">
+          {p}
+        </p>
+      )),
+    },
+    {
+      id: "keypoints",
+      title: "Key Points",
+      icon: <List className="h-5 w-5 text-primary" />,
+      content: (
+        <ul className="space-y-3">
+          {topic.keyPoints.map((point, i) => (
+            <li key={i} className="flex items-start gap-3">
+              <CheckCircle2 className="mt-0.5 h-5 w-5 text-primary shrink-0" />
+              <span className="text-sm sm:text-base">{point}</span>
+            </li>
+          ))}
+        </ul>
+      ),
+    },
+    {
+      id: "example",
+      title: topic.example.title,
+      icon: <Lightbulb className="h-5 w-5 text-primary" />,
+      content: topic.example.content.split('\n').map((line, i) => (
+        <p key={i} className="mb-2 last:mb-0 leading-relaxed">
+          {line}
+        </p>
+      )),
+    },
+    {
+      id: "tips",
+      title: "WAEC/NECO Exam Tips",
+      icon: <GraduationCap className="h-5 w-5 text-primary" />,
+      content: (
+        <ul className="space-y-3">
+          {topic.examTips.map((tip, i) => (
+            <li key={i} className="flex items-start gap-3">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                {i + 1}
+              </span>
+              <span className="text-sm sm:text-base">{tip}</span>
+            </li>
+          ))}
+        </ul>
+      ),
+    },
+  ];
+
+  const changePage = (direction: 'next' | 'prev') => {
+    if (
+      (direction === 'next' && currentPage >= pages.length - 1) ||
+      (direction === 'prev' && currentPage <= 0)
+    ) return;
+
+    setIsFlipping(true);
+
+    setTimeout(() => {
+      setCurrentPage(prev =>
+        direction === 'next' ? prev + 1 : prev - 1
+      );
+      setIsFlipping(false);
+    }, 250);
+  };
+
   return (
-    <div className="animate-fade-in space-y-5 sm:space-y-6">
+    <div className="animate-fade-in space-y-6">
       {/* Topic Header */}
-      <header className={cn(
-        "relative rounded-2xl border-2 p-5 sm:p-8",
-        `bg-${colorClass} border-${colorClass}`
-      )}>
+      <header className="relative rounded-2xl border p-6 sm:p-8 bg-card">
         <div className="flex items-start justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2">
-            <span className={cn("text-sm font-semibold", `text-${colorClass}`)}>
+            <span className="text-sm font-semibold text-primary">
               {topic.subject}
             </span>
+
             {topic.isAiEnhanced && (
               <Badge variant="secondary" className="flex items-center gap-1 text-xs">
                 <Sparkles className="h-3 w-3" />
                 AI-Enhanced
               </Badge>
             )}
+
             {isAiLoading && (
               <Badge variant="outline" className="flex items-center gap-1 text-xs">
-                <Sparkles className="h-3 w-3 animate-spin-slow" />
+                <Sparkles className="h-3 w-3 animate-spin" />
                 Enhancing...
               </Badge>
             )}
           </div>
+
           <button
             onClick={() => toggleBookmark(topic)}
             className={cn(
               "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all duration-200",
               bookmarked
                 ? "bg-primary text-primary-foreground shadow-sm"
-                : "bg-card/80 text-muted-foreground hover:bg-card hover:text-foreground hover:shadow-sm"
+                : "bg-muted text-muted-foreground hover:bg-muted/70"
             )}
-            aria-label={bookmarked ? "Remove bookmark" : "Save topic"}
           >
             {bookmarked ? (
               <BookmarkCheck className="h-5 w-5" />
@@ -66,9 +152,11 @@ const TopicResult = ({ topic, colorClass = 'primary', isAiLoading = false }: Top
             )}
           </button>
         </div>
-        <h1 className="mt-3 text-2xl font-bold text-foreground sm:text-3xl lg:text-4xl">
+
+        <h1 className="mt-4 text-2xl font-bold sm:text-3xl lg:text-4xl">
           {topic.title}
         </h1>
+
         {bookmarked && (
           <p className="mt-2 text-sm text-muted-foreground">
             ✓ Saved for revision
@@ -76,96 +164,53 @@ const TopicResult = ({ topic, colorClass = 'primary', isAiLoading = false }: Top
         )}
       </header>
 
-      {/* Definition - Section 1 */}
-      <section className="rounded-2xl border border-border bg-card p-5 shadow-card sm:p-6 lg:p-8">
-        <div className="mb-4 flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
-            <BookOpen className="h-5 w-5 text-primary" />
+      {/* Flip Book Section */}
+      <div className="relative perspective-1000">
+        <div
+          className={cn(
+            "rounded-2xl border border-border bg-card p-6 shadow-xl transition-transform duration-300 sm:p-8",
+            isFlipping && "rotate-y-180"
+          )}
+        >
+          <div className="mb-6 flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+              {pages[currentPage].icon}
+            </div>
+            <h2 className="text-lg font-bold sm:text-xl">
+              {pages[currentPage].title}
+            </h2>
           </div>
-          <h2 className="text-lg font-bold text-foreground sm:text-xl">Definition</h2>
-        </div>
-        <p className="text-base leading-relaxed text-foreground sm:text-lg">
-          {topic.definition}
-        </p>
-      </section>
 
-      {/* Detailed Explanation - Section 2 */}
-      <section className="rounded-2xl border border-border bg-card p-5 shadow-card sm:p-6 lg:p-8">
-        <div className="mb-4 flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
-            <FileText className="h-5 w-5 text-primary" />
+          <div className="prose prose-sm sm:prose-base max-w-none">
+            {pages[currentPage].content}
           </div>
-          <h2 className="text-lg font-bold text-foreground sm:text-xl">Detailed Explanation</h2>
         </div>
-        <div className="prose prose-sm sm:prose-base max-w-none">
-          {topic.explanation.split('\n\n').map((paragraph, index) => (
-            <p key={index} className="mb-4 last:mb-0 leading-relaxed text-foreground">
-              {paragraph}
-            </p>
-          ))}
-        </div>
-      </section>
 
-      {/* Key Points - Section 3 */}
-      <section className="rounded-2xl border border-border bg-card p-5 shadow-card sm:p-6 lg:p-8">
-        <div className="mb-4 flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
-            <List className="h-5 w-5 text-primary" />
-          </div>
-          <h2 className="text-lg font-bold text-foreground sm:text-xl">Key Points</h2>
-        </div>
-        <ul className="space-y-3">
-          {topic.keyPoints.map((point, index) => (
-            <li key={index} className="flex items-start gap-3">
-              <CheckCircle2 className={cn("mt-0.5 h-5 w-5 shrink-0", `text-${colorClass}`)} />
-              <span className="text-sm text-foreground sm:text-base">{point}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
+        {/* Navigation */}
+        <div className="mt-6 flex items-center justify-between">
+          <button
+            onClick={() => changePage('prev')}
+            disabled={currentPage === 0}
+            className="flex items-center gap-2 rounded-lg bg-muted px-4 py-2 text-sm transition hover:bg-muted/70 disabled:opacity-40"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Previous
+          </button>
 
-      {/* Example - Section 4 */}
-      <section className={cn(
-        "rounded-2xl border-2 p-5 sm:p-6 lg:p-8",
-        `bg-${colorClass} border-${colorClass}`
-      )}>
-        <div className="mb-4 flex items-center gap-3">
-          <div className={cn(
-            "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
-            `bg-${colorClass}`
-          )}>
-            <Lightbulb className={cn("h-5 w-5", `text-${colorClass}`)} />
-          </div>
-          <h2 className="text-lg font-bold text-foreground sm:text-xl">{topic.example.title}</h2>
-        </div>
-        <div className="prose prose-sm sm:prose-base max-w-none">
-          {topic.example.content.split('\n').map((line, index) => (
-            <p key={index} className="mb-2 last:mb-0 leading-relaxed text-foreground">
-              {line}
-            </p>
-          ))}
-        </div>
-      </section>
+          <span className="text-sm text-muted-foreground">
+            {currentPage + 1} / {pages.length}
+          </span>
 
-      {/* Exam Tips - Section 5 */}
-      <section className="rounded-2xl border-2 border-primary bg-accent p-5 shadow-card sm:p-6 lg:p-8">
-        <div className="mb-4 flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary">
-            <GraduationCap className="h-5 w-5 text-primary-foreground" />
-          </div>
-          <h2 className="text-lg font-bold text-foreground sm:text-xl">WAEC/NECO Exam Tips</h2>
+          <button
+            onClick={() => changePage('next')}
+            disabled={currentPage === pages.length - 1}
+            className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm text-primary-foreground transition hover:opacity-90 disabled:opacity-40"
+          >
+            Next
+            <ChevronRight className="h-4 w-4" />
+          </button>
         </div>
-        <ul className="space-y-3">
-          {topic.examTips.map((tip, index) => (
-            <li key={index} className="flex items-start gap-3">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
-                {index + 1}
-              </span>
-              <span className="text-sm text-foreground sm:text-base">{tip}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
+      </div>
     </div>
   );
 };

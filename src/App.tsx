@@ -9,6 +9,7 @@ import SubjectPage from "./pages/SubjectPage";
 import BookmarksPage from "./pages/BookmarksPage";
 import NotFound from "./pages/NotFound";
 
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -30,5 +31,7 @@ const App = () => (
     </ThemeProvider>
   </QueryClientProvider>
 );
+
+
 
 export default App;

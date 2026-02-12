@@ -1,16 +1,15 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useParams, useSearchParams, Navigate } from 'react-router-dom';
-import { 
-  Leaf, 
-  FlaskConical, 
-  Calculator, 
-  Atom, 
-  BookOpen, 
+import {
+  Leaf,
+  FlaskConical,
+  Calculator,
+  Atom,
+  BookOpen,
   Pi,
-  type LucideIcon 
+  type LucideIcon,
 } from 'lucide-react';
 import { subjects, searchTopics, TopicContent, TopicSearchResult } from '@/data/subjects';
-import { USE_AI, enhanceTopicWithAI } from '@/services/aiService';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SearchBar from '@/components/SearchBar';
@@ -19,6 +18,8 @@ import EmptyState from '@/components/EmptyState';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import SuggestedTopics from '@/components/SuggestedTopics';
 import { cn } from '@/lib/utils';
+import { fetchAIExplanation, getAIMode } from '@/services/aiService';
+
 
 const iconMap: Record<string, LucideIcon> = {
   Leaf,
@@ -34,6 +35,7 @@ type LookupState = 'initial' | 'loading' | 'results' | 'no-results';
 const SubjectPage = () => {
   const { subjectId } = useParams<{ subjectId: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
+
   const [lookupState, setLookupState] = useState<LookupState>('initial');
   const [lookupQuery, setLookupQuery] = useState('');
   const [topicResult, setTopicResult] = useState<TopicContent | null>(null);
@@ -43,52 +45,55 @@ const SubjectPage = () => {
   const subject = subjects.find(s => s.id === subjectId);
 
   const handleLookup = useCallback(async (query: string) => {
-    setLookupQuery(query);
-    setLookupState('loading');
-    setRelatedTopics([]);
-    
-    // Simulate intelligent lookup delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    const searchResult: TopicSearchResult = searchTopics(query, subjectId);
-    
-    if (searchResult.topic) {
-      // Show mock data immediately
-      setTopicResult(searchResult.topic);
-      setLookupState('results');
-      
-      // If AI mode is enabled, enhance the content
-      if (USE_AI) {
-        setIsAiLoading(true);
-        try {
-          const { topic: enhancedTopic } = await enhanceTopicWithAI(searchResult.topic, true);
-          setTopicResult(enhancedTopic);
-        } catch (error) {
-          console.warn('AI enhancement failed:', error);
-        } finally {
-          setIsAiLoading(false);
-        }
-      }
-    } else {
-      setTopicResult(null);
-      setRelatedTopics(searchResult.relatedTopics);
-      setLookupState('no-results');
-    }
-  }, [subjectId]);
+  setLookupQuery(query);
+  setLookupState('loading');
+  setRelatedTopics([]);
+  setIsAiLoading(false);
 
-  // Auto-lookup when topic query param is present (from bookmarks)
+  await new Promise(resolve => setTimeout(resolve, 800));
+
+  const searchResult: TopicSearchResult = searchTopics(query, subjectId);
+
+  if (searchResult.topic) {
+    setTopicResult(searchResult.topic);
+    setLookupState('results');
+
+   if (getAIMode()) {
+
+      try {
+        setIsAiLoading(true);
+
+        const enhancedTopic = await fetchAIExplanation(
+          searchResult.topic.title,
+          searchResult.topic.subject
+        );
+
+        setTopicResult(enhancedTopic);
+
+      } catch (error) {
+        console.warn("AI failed. Using default content.");
+      } finally {
+        setIsAiLoading(false);
+      }
+    }
+
+  } else {
+    setTopicResult(null);
+    setRelatedTopics(searchResult.relatedTopics);
+    setLookupState('no-results');
+  }
+
+}, [subjectId]);
+
+
+  // Auto-search when coming from bookmarks
   useEffect(() => {
     const topicParam = searchParams.get('topic');
     if (topicParam && lookupState === 'initial') {
       handleLookup(topicParam);
-      // Clear the query param after looking up
       setSearchParams({}, { replace: true });
     }
   }, [searchParams, lookupState, handleLookup, setSearchParams]);
-
-  const handleSuggestedTopicClick = (topic: string) => {
-    handleLookup(topic);
-  };
 
   if (!subject) {
     return <Navigate to="/" replace />;
@@ -99,90 +104,91 @@ const SubjectPage = () => {
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-      
+
       <main className="flex-1">
         {/* Subject Header */}
-        <section className={cn(
-          "border-b py-6 sm:py-10",
-          `bg-${subject.colorClass}`
-        )}>
+        <section className={cn("border-b py-6 sm:py-10", `bg-${subject.colorClass}`)}>
           <div className="container">
-            <div className="flex items-center gap-3 sm:gap-4">
+            <div className="flex items-center gap-4">
               <div className={cn(
-                "flex h-14 w-14 shrink-0 items-center justify-center rounded-xl sm:h-16 sm:w-16 sm:rounded-2xl lg:h-20 lg:w-20",
+                "flex h-16 w-16 items-center justify-center rounded-2xl",
                 `bg-${subject.colorClass}`
               )}>
-                <Icon className={cn("h-7 w-7 sm:h-8 sm:w-8 lg:h-10 lg:w-10", `text-${subject.colorClass}`)} />
+                <Icon className={cn("h-8 w-8", `text-${subject.colorClass}`)} />
               </div>
-              <div className="min-w-0">
-                <h1 className="text-2xl font-bold text-foreground sm:text-3xl lg:text-4xl">
-                  {subject.name}
-                </h1>
-                <p className="mt-0.5 text-sm text-muted-foreground sm:mt-1 sm:text-base">
-                  {subject.description}
-                </p>
+              <div>
+                <h1 className="text-3xl font-bold">{subject.name}</h1>
+                <p className="text-muted-foreground">{subject.description}</p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Topic Lookup Section */}
-        <section className="py-6 sm:py-10">
-          <div className="container">
-            <div className="mx-auto max-w-2xl">
-              <SearchBar 
-                onSearch={handleLookup}
-                isLoading={lookupState === 'loading'}
-                placeholder={`Search any ${subject.name} topic...`}
+        {/* Search */}
+        <section className="py-8">
+          <div className="container max-w-2xl">
+            <SearchBar
+              onSearch={handleLookup}
+              isLoading={lookupState === 'loading'}
+              placeholder={`Search any ${subject.name} topic...`}
+              colorClass={subject.colorClass}
+            />
+
+            {lookupState === 'initial' && (
+              <SuggestedTopics
+                topics={subject.topics.slice(0, 5)}
+                onTopicClick={handleLookup}
                 colorClass={subject.colorClass}
               />
-              
-              {lookupState === 'initial' && (
-                <SuggestedTopics 
-                  topics={subject.topics.slice(0, 5)}
-                  onTopicClick={handleSuggestedTopicClick}
-                  colorClass={subject.colorClass}
-                />
-              )}
-            </div>
+            )}
           </div>
         </section>
 
-        {/* Results Section */}
-        <section className="pb-12 sm:pb-16 lg:pb-20">
-          <div className="container">
-            <div className="mx-auto max-w-3xl">
-              {lookupState === 'initial' && (
-                <EmptyState type="initial" colorClass={subject.colorClass} />
-              )}
-              
-              {lookupState === 'loading' && (
-                <LoadingSpinner 
-                  colorClass={subject.colorClass}
-                  message="Finding your topic..."
-                  submessage="Preparing a detailed explanation with exam tips"
-                />
-              )}
-              
-              {lookupState === 'no-results' && (
-                <EmptyState 
-                  type="no-results" 
-                  query={lookupQuery} 
-                  colorClass={subject.colorClass}
-                  relatedTopics={relatedTopics}
-                  onTopicClick={handleSuggestedTopicClick}
-                />
-              )}
-              
-              {lookupState === 'results' && topicResult && (
-                <TopicResult 
-                  topic={topicResult} 
-                  colorClass={subject.colorClass}
-                  isAiLoading={isAiLoading}
-                />
-              )}
-            </div>
-          </div>
+        {/* Results */}
+        <section className="pb-16">
+          <div className="container max-w-3xl">
+            {lookupState === 'initial' && (
+              <EmptyState type="initial" colorClass={subject.colorClass} />
+            )}
+
+            {lookupState === 'loading' && (
+              <LoadingSpinner
+                colorClass={subject.colorClass}
+                message="Finding your topic..."
+                submessage="Preparing a clear explanation"
+              />
+            )}
+
+            {lookupState === 'no-results' && (
+              <EmptyState
+                type="no-results"
+                query={lookupQuery}
+                relatedTopics={relatedTopics}
+                onTopicClick={handleLookup}
+                colorClass={subject.colorClass}
+              />
+            )}
+
+          {lookupState === 'results' && topicResult && (
+  <div
+    className={`transition-all duration-500 ${
+      isAiLoading
+        ? "opacity-70 blur-[1px]"
+        : "opacity-100 blur-0"
+    } ${
+      getAIMode() && !isAiLoading
+        ? "animate-[fadeInScale_0.4s_ease-out]"
+        : ""
+    }`}
+  >
+    <TopicResult
+      topic={topicResult}
+      colorClass={subject.colorClass}
+      isAiLoading={isAiLoading}
+    />
+  </div>
+)}
+          </div>  
         </section>
       </main>
 

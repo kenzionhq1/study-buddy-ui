@@ -4,7 +4,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useBookmarks } from '@/hooks/useBookmarks';
 import { useState, useEffect } from 'react';
 import { getAIMode, setAIMode } from '@/services/aiService';
-
+import Logo from '@/logo.png';
 const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -39,7 +39,9 @@ const Header = () => {
           )}
 
           <Link to="/" className="flex items-center gap-3 transition-opacity hover:opacity-80">
+            <img src={Logo} alt="Study Buddy" className="h-30 w-20 rounded-lg object-contain" />
             <img src="/logo.png" alt="Study Buddy" className="h-30 w-20 rounded-lg object-contain" />
+
             <div className="flex flex-col">
               <span className="text-lg font-bold leading-tight text-foreground">
                 Study Assistant

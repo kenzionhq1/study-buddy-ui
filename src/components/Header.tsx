@@ -39,18 +39,21 @@ const Header = () => {
           )}
 
           <Link to="/" className="flex items-center gap-3 transition-opacity hover:opacity-80">
-            <img src={Logo} alt="Study Buddy" className="h-30 w-20 rounded-lg object-contain" />
-            <img src="/logo.png" alt="Study Buddy" className="h-30 w-20 rounded-lg object-contain" />
+  <img
+    src="/logo.png"
+    alt="Study Buddy"
+    className="h-30 w-20 rounded-lg object-contain"
+  />
+  <div className="flex flex-col">
+    <span className="text-lg font-bold leading-tight text-foreground">
+      Study Assistant
+    </span>
+    <span className="text-xs text-muted-foreground">
+      Learn smarter, not harder
+    </span>
+  </div>
+</Link>
 
-            <div className="flex flex-col">
-              <span className="text-lg font-bold leading-tight text-foreground">
-                Study Assistant
-              </span>
-              <span className="text-xs text-muted-foreground">
-                Learn smarter, not harder
-              </span>
-            </div>
-          </Link>
         </div>
 
         <nav className="flex items-center gap-2">

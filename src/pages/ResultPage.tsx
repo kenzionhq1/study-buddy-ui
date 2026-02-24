@@ -1,54 +1,68 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams, useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Sparkles, AlertCircle, CheckCircle2, BookOpen, Lightbulb, List, FlaskConical, GraduationCap, HelpCircle } from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
+import {
+  ArrowLeft,
+  Sparkles,
+  AlertCircle,
+  CheckCircle2,
+  BookOpen,
+  Lightbulb,
+  List,
+  FlaskConical,
+  GraduationCap,
+  HelpCircle
+} from 'lucide-react';
+
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { Button } from '@/components/ui/button';
-import { generateTopic, fetchTopicById, GeneratedTopic } from '@/services/topicService';
+import { fetchTopicById, GeneratedTopic } from '@/services/topicService';
 
 const ResultPage = () => {
-  const [searchParams] = useSearchParams();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const topicQuery = searchParams.get('topic');
   const [topic, setTopic] = useState<GeneratedTopic | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
+    if (!id) {
+      setTopic(null);
+      setError('No topic selected');
+      setLoading(false);
+      return;
+    }
+
     let cancelled = false;
 
     const load = async () => {
-      setLoading(true);
-      setError('');
       try {
-        let result: GeneratedTopic | null = null;
+        setLoading(true);
+        setError('');
+        setTopic(null);
 
-        if (id) {
-          result = await fetchTopicById(id);
-        } else if (topicQuery) {
-          result = await generateTopic(topicQuery);
-        }
+        const data = await fetchTopicById(id);
 
-        if (!cancelled) {
-          if (result) {
-            setTopic(result);
-          } else {
-            setError('Topic not found.');
-          }
+        if (!cancelled && data) {
+          setTopic(data);
+        } else if (!cancelled && !data) {
+          setError('Topic not found');
         }
       } catch (err: any) {
-        if (!cancelled) setError(err.message || 'Failed to generate topic.');
+        if (!cancelled) setError(err.message || 'Failed to load topic');
       } finally {
         if (!cancelled) setLoading(false);
       }
     };
 
     load();
-    return () => { cancelled = true; };
-  }, [id, topicQuery]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -56,6 +70,7 @@ const ResultPage = () => {
 
       <main className="flex-1 py-8">
         <div className="container max-w-3xl">
+
           <Button
             variant="ghost"
             className="mb-4"
@@ -67,8 +82,8 @@ const ResultPage = () => {
 
           {loading && (
             <LoadingSpinner
-              message="Generating your topic…"
-              submessage="AI is preparing a clear explanation"
+              message="Loading topic..."
+              submessage="Preparing your study material"
             />
           )}
 
@@ -80,8 +95,9 @@ const ResultPage = () => {
             </div>
           )}
 
-          {!loading && !error && topic && (
+          {!loading && topic && (
             <div className="animate-fade-in space-y-6">
+
               {/* Title */}
               <div className="flex items-center gap-3">
                 <Sparkles className="h-6 w-6 text-primary" />
@@ -94,43 +110,37 @@ const ResultPage = () => {
                 Generated {new Date(topic.createdAt).toLocaleDateString()}
               </p>
 
-              {/* Definition */}
               <Section icon={<BookOpen className="h-5 w-5 text-primary" />} title="Definition">
-                <p className="text-foreground leading-relaxed">{topic.content.definition}</p>
-              </Section>
+              <p>{topic.content.definition || 'No definition available yet.'}</p>
+            </Section>
 
-              {/* Explanation */}
               <Section icon={<Lightbulb className="h-5 w-5 text-primary" />} title="Explanation">
-                <p className="text-foreground leading-relaxed whitespace-pre-line">{topic.content.explanation}</p>
+                <p className="whitespace-pre-line">{topic.content.explanation || 'No explanation available yet.'}</p>
               </Section>
 
-              {/* Key Points */}
               <Section icon={<List className="h-5 w-5 text-primary" />} title="Key Points">
-                <ul className="ml-4 list-disc space-y-1.5 text-foreground">
+                <ul className="ml-4 list-disc space-y-1.5">
                   {topic.content.keyPoints.map((pt, i) => (
                     <li key={i}>{pt}</li>
                   ))}
                 </ul>
               </Section>
 
-              {/* Example */}
               <Section icon={<FlaskConical className="h-5 w-5 text-primary" />} title={topic.content.example.title || 'Example'}>
-                <p className="text-foreground leading-relaxed whitespace-pre-line">
-                  {topic.content.example.content}
+                <p className="whitespace-pre-line">
+                  {topic.content.example.content || 'No example available yet.'}
                 </p>
               </Section>
 
-              {/* Exam Tips */}
               <Section icon={<GraduationCap className="h-5 w-5 text-primary" />} title="Exam Tips">
-                <ul className="ml-4 list-disc space-y-1.5 text-foreground">
+                <ul className="ml-4 list-disc space-y-1.5">
                   {topic.content.examTips.map((tip, i) => (
                     <li key={i}>{tip}</li>
                   ))}
                 </ul>
               </Section>
 
-              {/* Questions */}
-              {topic.questions.length > 0 && (
+              {topic.questions?.length > 0 && (
                 <Section icon={<HelpCircle className="h-5 w-5 text-primary" />} title="Practice Questions">
                   <div className="space-y-5">
                     {topic.questions.map((q, qi) => (
@@ -139,6 +149,7 @@ const ResultPage = () => {
                   </div>
                 </Section>
               )}
+
             </div>
           )}
         </div>
@@ -149,35 +160,30 @@ const ResultPage = () => {
   );
 };
 
-/* ---- Helpers ---- */
+/* ---------- Components ---------- */
 
-const Section = ({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) => (
+const Section = ({ icon, title, children }: any) => (
   <div className="rounded-xl border border-border bg-card p-5 shadow-card">
     <div className="mb-3 flex items-center gap-2">
       {icon}
-      <h2 className="text-lg font-semibold text-foreground">{title}</h2>
+      <h2 className="text-lg font-semibold">{title}</h2>
     </div>
     {children}
   </div>
 );
 
-const QuestionCard = ({
-  q,
-  index,
-}: {
-  q: { question: string; options: string[]; answer: string };
-  index: number;
-}) => {
+const QuestionCard = ({ q, index }: any) => {
   const [revealed, setRevealed] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
 
   return (
     <div className="rounded-lg border border-border bg-background p-4">
-      <p className="font-medium text-foreground">
+      <p className="font-medium">
         {index + 1}. {q.question}
       </p>
+
       <div className="mt-3 space-y-2">
-        {q.options.map((opt) => (
+        {q.options.map((opt: string) => (
           <button
             key={opt}
             onClick={() => {

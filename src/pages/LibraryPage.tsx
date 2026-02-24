@@ -4,7 +4,7 @@ import { Library, Search, BookOpen, Loader2 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
-import { fetchLibrary, GeneratedTopic } from '@/services/topicService';
+import { fetchLibrary, GeneratedTopic, getTopicId } from '@/services/topicService';
 
 const LibraryPage = () => {
   const [topics, setTopics] = useState<GeneratedTopic[]>([]);
@@ -70,26 +70,31 @@ const LibraryPage = () => {
 
           {!loading && filtered.length > 0 && (
             <div className="grid gap-4 sm:grid-cols-2">
-              {filtered.map((t, i) => (
-                <Link
-                  key={t.id}
-                  to={`/result/${t.id}`}
-                  className={`group rounded-xl border border-border bg-card p-5 shadow-card transition-all hover:shadow-card-hover hover:-translate-y-0.5 animate-fade-in stagger-${Math.min(i + 1, 6)}`}
-                  style={{ opacity: 0 }}
-                >
-                  <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
-                    {t.topic}
-                  </h3>
-                  <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
-                    {t.content.definition}
-                  </p>
-                  <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
-                    <span>{new Date(t.createdAt).toLocaleDateString()}</span>
-                    <span>·</span>
-                    <span>{t.questions.length} questions</span>
-                  </div>
-                </Link>
-              ))}
+              {filtered.map((t, i) => {
+                const topicId = getTopicId(t);
+                if (!topicId) return null;
+
+                return (
+                  <Link
+                    key={topicId}
+                    to={`/result/${topicId}`}
+                    className={`group rounded-xl border border-border bg-card p-5 shadow-card transition-all hover:shadow-card-hover hover:-translate-y-0.5 animate-fade-in stagger-${Math.min(i + 1, 6)}`}
+                    style={{ opacity: 0 }}
+                  >
+                    <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                      {t.topic}
+                    </h3>
+                    <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+                      {t.content.definition}
+                    </p>
+                    <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+                      <span>{new Date(t.createdAt).toLocaleDateString()}</span>
+                      <span>·</span>
+                      <span>{t.questions?.length ?? 0} questions</span>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           )}
         </div>

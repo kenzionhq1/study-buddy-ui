@@ -1,15 +1,13 @@
 import { useState, FormEvent } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { LogIn, Eye, EyeOff, Loader2 } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useAuth } from '@/contexts/AuthContext';
 
 const LoginPage = () => {
-  const { login } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-  const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/';
+  const { login } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,9 +19,11 @@ const LoginPage = () => {
     e.preventDefault();
     setError('');
     setLoading(true);
+
     try {
       await login(email, password);
-      navigate(from, { replace: true });
+      navigate('/', { replace: true });
+
     } catch (err: any) {
       setError(err.message || 'Login failed. Please try again.');
     } finally {
@@ -34,11 +34,12 @@ const LoginPage = () => {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-md animate-fade-in-scale">
-        {/* Logo */}
         <div className="mb-8 text-center">
           <img src="/logo.png" alt="Study Assistant" className="mx-auto h-16 w-auto" />
-          <h1 className="mt-4 text-2xl font-bold text-foreground">Welcome back</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Sign in to continue learning</p>
+          <h1 className="mt-4 text-2xl font-bold text-foreground">Sign in</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Welcome back — continue learning
+          </p>
         </div>
 
         <form
@@ -70,7 +71,7 @@ const LoginPage = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
+                placeholder="Your password"
                 className="pr-10"
               />
               <button
@@ -89,13 +90,13 @@ const LoginPage = () => {
             ) : (
               <>
                 <LogIn className="h-4 w-4" />
-                Sign In
+                Sign in
               </>
             )}
           </Button>
 
           <p className="text-center text-sm text-muted-foreground">
-            Don&apos;t have an account?{' '}
+            Don't have an account?{' '}
             <Link to="/register" className="font-medium text-primary hover:underline">
               Create one
             </Link>

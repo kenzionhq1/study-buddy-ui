@@ -1,29 +1,49 @@
 import { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, Loader2, FolderOpen } from 'lucide-react';
+import { Sparkles, Loader2, AlertCircle } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { findCachedTopic } from '@/services/topicService';
+import { generateTopic, getTopicId } from '@/services/topicService';
+
+function getGenerateErrorMessage(error: any): string {
+  const message = String(error?.message || '');
+
+  if (/503|service unavailable/i.test(message)) {
+    return 'Topic generation service is temporarily unavailable. Please try again shortly.';
+  }
+
+  if (/failed to fetch|networkerror|network error/i.test(message)) {
+    return 'Unable to reach the server. Check your backend and internet connection.';
+  }
+
+  return message || 'Failed to generate topic';
+}
 
 const DashboardPage = () => {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const cached = query.trim() ? findCachedTopic(query.trim()) : undefined;
-
-  const handleGenerate = (e: FormEvent) => {
+  const handleGenerate = async (e: FormEvent) => {
     e.preventDefault();
+    setError('');
     if (!query.trim()) return;
 
-    if (cached) {
-      navigate(`/result/${cached.id}`);
-      return;
-    }
+    try {
+      setLoading(true);
 
-    navigate(`/result?topic=${encodeURIComponent(query.trim())}`);
+      const data = await generateTopic(query.trim());
+      const topicId = getTopicId(data);
+      if (!topicId) throw new Error('Invalid topic response from server');
+      navigate(`/result/${topicId}`);
+    } catch (error: any) {
+      setError(getGenerateErrorMessage(error));
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -44,40 +64,39 @@ const DashboardPage = () => {
             <form onSubmit={handleGenerate} className="mt-8 flex gap-2">
               <Input
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  if (error) setError('');
+                }}
                 placeholder="e.g. Photosynthesis, Quadratic Equations…"
                 className="flex-1 rounded-xl py-5 text-base"
                 disabled={loading}
               />
 
-              {cached ? (
-                <Button
-                  type="submit"
-                  variant="secondary"
-                  className="shrink-0 rounded-xl px-5"
-                >
-                  <FolderOpen className="h-4 w-4" />
-                  <span className="hidden sm:inline">Open Saved</span>
-                </Button>
-              ) : (
-                <Button
-                  type="submit"
-                  className="shrink-0 rounded-xl px-5"
-                  disabled={!query.trim() || loading}
-                >
-                  {loading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Sparkles className="h-4 w-4" />
-                  )}
-                  <span className="hidden sm:inline">Generate</span>
-                </Button>
-              )}
+              <Button
+                type="submit"
+                className="shrink-0 rounded-xl px-5"
+                disabled={!query.trim() || loading}
+              >
+                {loading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Sparkles className="h-4 w-4" />
+                )}
+                <span className="hidden sm:inline">Generate</span>
+              </Button>
             </form>
+
+            {error && (
+              <div className="mt-4 flex items-start gap-2 rounded-lg bg-destructive/10 px-4 py-3 text-left text-sm text-destructive">
+                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
           </div>
         </section>
 
-        {/* Quick info */}
+        {/* Info */}
         <section className="py-12">
           <div className="container grid max-w-3xl gap-6 sm:grid-cols-3">
             {[

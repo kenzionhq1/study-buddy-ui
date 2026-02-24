@@ -1,13 +1,13 @@
 import { useState, FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserPlus, Eye, EyeOff, Loader2 } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useAuth } from '@/contexts/AuthContext';
 
 const RegisterPage = () => {
-  const { register } = useAuth();
   const navigate = useNavigate();
+  const { register } = useAuth();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -19,14 +19,18 @@ const RegisterPage = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
+
     if (password.length < 6) {
       setError('Password must be at least 6 characters.');
       return;
     }
+
     setLoading(true);
+
     try {
       await register(name, email, password);
       navigate('/', { replace: true });
+
     } catch (err: any) {
       setError(err.message || 'Registration failed. Please try again.');
     } finally {
@@ -40,7 +44,9 @@ const RegisterPage = () => {
         <div className="mb-8 text-center">
           <img src="/logo.png" alt="Study Assistant" className="mx-auto h-16 w-auto" />
           <h1 className="mt-4 text-2xl font-bold text-foreground">Create your account</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Start generating smart study notes</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Start generating smart study notes
+          </p>
         </div>
 
         <form

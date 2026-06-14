@@ -16,7 +16,31 @@ interface AuthState {
   logout: () => void;
 }
 
-const AuthContext = createContext<AuthState | undefined>(undefined);
+declare global {
+  // Keep a single context instance across HMR reloads to avoid provider/hook mismatch.
+  var __studyAssistantAuthContext__: ReturnType<typeof createContext<AuthState | undefined>> | undefined;
+}
+
+const AuthContext =
+  globalThis.__studyAssistantAuthContext__ ??
+  createContext<AuthState | undefined>(undefined);
+
+if (!globalThis.__studyAssistantAuthContext__) {
+  globalThis.__studyAssistantAuthContext__ = AuthContext;
+}
+
+const fallbackAuthState: AuthState = {
+  user: null,
+  isLoading: false,
+  isAuthenticated: false,
+  login: async () => {
+    throw new Error('Auth provider not ready');
+  },
+  register: async () => {
+    throw new Error('Auth provider not ready');
+  },
+  logout: () => {},
+};
 
 function normalizeUser(raw: any): User | null {
   if (!raw || typeof raw !== 'object') return null;
@@ -153,6 +177,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 export const useAuth = () => {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  if (!ctx) {
+    console.error('Auth context unavailable; falling back to unauthenticated state.');
+    return fallbackAuthState;
+  }
   return ctx;
 };

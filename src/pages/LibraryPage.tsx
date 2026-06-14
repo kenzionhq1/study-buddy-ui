@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Library, Search, BookOpen, Loader2 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import MobileNav from '@/components/MobileNav';
 import { Input } from '@/components/ui/input';
 import { fetchLibrary, GeneratedTopic, getTopicId } from '@/services/topicService';
 
@@ -24,12 +25,14 @@ const LibraryPage = () => {
     : topics;
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <Header />
+    <div className="flex min-h-screen flex-col bg-background page-shell">
+      <div className="hidden sm:block">
+        <Header />
+      </div>
 
       <main className="flex-1 py-8">
-        <div className="container max-w-4xl">
-          <div className="mb-6 flex items-center gap-3">
+        <div className="container max-w-4xl px-4">
+          <div className="mb-6 flex flex-wrap items-center gap-2 sm:gap-3">
             <Library className="h-7 w-7 text-primary" />
             <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
               My Library
@@ -43,7 +46,7 @@ const LibraryPage = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search saved topics…"
-              className="pl-10"
+              className="w-full rounded-xl pl-10"
             />
           </div>
 
@@ -69,7 +72,7 @@ const LibraryPage = () => {
           )}
 
           {!loading && filtered.length > 0 && (
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2 scroll-reveal">
               {filtered.map((t, i) => {
                 const topicId = getTopicId(t);
                 if (!topicId) return null;
@@ -77,9 +80,8 @@ const LibraryPage = () => {
                 return (
                   <Link
                     key={topicId}
-                    to={`/result/${topicId}`}
-                    className={`group rounded-xl border border-border bg-card p-5 shadow-card transition-all hover:shadow-card-hover hover:-translate-y-0.5 animate-fade-in stagger-${Math.min(i + 1, 6)}`}
-                    style={{ opacity: 0 }}
+                    to={`/app/result/${topicId}`}
+                    className="group rounded-xl border border-border bg-card p-5 shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover"
                   >
                     <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
                       {t.topic}
@@ -101,6 +103,7 @@ const LibraryPage = () => {
       </main>
 
       <Footer />
+      <MobileNav />
     </div>
   );
 };

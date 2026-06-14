@@ -17,6 +17,7 @@ import {
 
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import MobileNav from '@/components/MobileNav';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -101,17 +102,19 @@ const ResultPage = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <Header />
+    <div className="flex min-h-screen flex-col bg-background page-shell">
+      <div className="hidden sm:block">
+        <Header />
+      </div>
 
       <main className="flex-1 py-8 sm:py-10">
         <div className="container max-w-5xl px-4">
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-            <Button variant="ghost" onClick={() => navigate(-1)} className="gap-2">
+          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <Button variant="ghost" onClick={() => navigate(-1)} className="w-full gap-2 sm:w-auto">
               <ArrowLeft className="h-4 w-4" />
               Back
             </Button>
-            <div className="inline-flex items-center gap-2 rounded-full bg-primary/15 px-3 py-1 text-xs font-semibold text-primary">
+            <div className="inline-flex items-center justify-center gap-2 self-start rounded-full bg-primary/15 px-3 py-1 text-xs font-semibold text-primary sm:self-auto">
               <Sparkles className="h-3 w-3" />
               Generated study pack
             </div>
@@ -129,9 +132,9 @@ const ResultPage = () => {
 
           {!loading && topic && (
             <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
-              <div className="space-y-4">
+              <div className="space-y-4 scroll-reveal">
                 <div className="rounded-2xl border border-border bg-card p-5 sm:p-6 shadow-sm">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
                       <Sparkles className="h-4 w-4 text-primary" />
                       Generated {new Date(topic.createdAt).toLocaleDateString()}
@@ -139,7 +142,7 @@ const ResultPage = () => {
                     <Button
                       variant={isReading ? 'secondary' : 'outline'}
                       size="sm"
-                      className="gap-2"
+                      className="w-full gap-2 sm:w-auto"
                       onClick={handleReadAloud}
                     >
                       {isReading ? <Square className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
@@ -192,7 +195,7 @@ const ResultPage = () => {
                 ) : null}
               </div>
 
-              <aside className="space-y-4">
+              <aside className="space-y-4 scroll-reveal">
                 <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
                   <h3 className="text-sm font-semibold text-foreground">Topic Snapshot</h3>
                   <div className="mt-3 grid gap-3 text-sm text-muted-foreground">
@@ -224,6 +227,7 @@ const ResultPage = () => {
       </main>
 
       <Footer />
+      <MobileNav />
     </div>
   );
 };

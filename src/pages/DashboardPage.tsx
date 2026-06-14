@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import MobileNav from '@/components/MobileNav';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { generateTopic, getTopicId } from '@/services/topicService';
@@ -53,7 +54,7 @@ const DashboardPage = () => {
       const data = await generateTopic(query.trim());
       const topicId = getTopicId(data);
       if (!topicId) throw new Error('Invalid topic response from server');
-      navigate(`/result/${topicId}`);
+      navigate(`/app/result/${topicId}`);
     } catch (error: any) {
       setError(getGenerateErrorMessage(error));
     } finally {
@@ -62,12 +63,14 @@ const DashboardPage = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <Header />
+    <div className="flex min-h-screen flex-col bg-background page-shell">
+      <div className="hidden sm:block">
+        <Header />
+      </div>
 
       <main className="flex-1">
-        <section className="relative overflow-hidden">
-          <div className="container relative grid gap-6 px-4 py-8 sm:py-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10">
+        <section className="relative overflow-hidden scroll-reveal">
+          <div className="container relative grid max-w-6xl gap-6 px-4 py-8 sm:py-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10">
             <div className="space-y-6">
               <div className="inline-flex items-center gap-2 rounded-full bg-primary/15 px-3 py-1 text-xs font-medium text-primary">
                 <Sparkles className="h-3 w-3" /> Study Assistant
@@ -207,8 +210,8 @@ const DashboardPage = () => {
           </div>
         </section>
 
-        <section className="border-t border-border bg-card py-8 sm:py-10">
-          <div className="container grid gap-3 px-4 sm:grid-cols-2 lg:grid-cols-3">
+        <section className="border-t border-border bg-card py-8 sm:py-10 scroll-reveal">
+          <div className="container grid max-w-5xl gap-3 px-4 sm:grid-cols-2 lg:grid-cols-3">
             {[
               { label: 'Avg. read time', value: '3–5 min' },
               { label: 'Practice questions', value: '5–10 per topic' },
@@ -227,6 +230,7 @@ const DashboardPage = () => {
       </main>
 
       <Footer />
+      <MobileNav />
     </div>
   );
 };

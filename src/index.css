@@ -119,6 +119,10 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', system-ui, sans-serif;
+    background: radial-gradient(circle at 20% 20%, rgba(168, 232, 214, 0.22), transparent 35%),
+      radial-gradient(circle at 80% 0%, rgba(120, 180, 255, 0.18), transparent 30%),
+      radial-gradient(circle at 50% 75%, rgba(255, 214, 165, 0.22), transparent 35%),
+      hsl(var(--background));
   }
 }
 
@@ -169,6 +173,23 @@
   .shadow-elevated {
     box-shadow: var(--shadow-xl);
   }
+
+  /* Page fade for route changes */
+  .page-shell {
+    animation: page-fade 240ms ease;
+  }
+
+  /* Scroll reveal utility */
+  .scroll-reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 420ms ease, transform 420ms ease;
+  }
+
+  .scroll-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Custom animations - refined for smooth, subtle effects */
@@ -201,6 +222,11 @@
 @keyframes fade-in-scale {
   from { opacity: 0; transform: scale(0.98); }
   to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes page-fade {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes shimmer {

@@ -2,7 +2,8 @@ const AUTH_TOKEN_KEY = 'auth_token';
 const LEGACY_TOKEN_KEY = 'token';
 
 const envBaseUrl = (import.meta.env.VITE_API_URL as string | undefined)?.trim();
-export const API_BASE_URL = (envBaseUrl || 'http://localhost:5000/api').replace(/\/+$/, '');
+const fallbackBase = 'https://study-ai-backend-5dte.onrender.com/api';
+export const API_BASE_URL = (envBaseUrl || fallbackBase).replace(/\/+$/, '');
 
 /* ---- Token helpers ---- */
 
@@ -81,7 +82,9 @@ export async function apiFetch<T>(
   // Do not force-redirect for public auth calls.
   if (res.status === 401 && !skipAuth) {
     clearToken();
-    window.location.href = '/login';
+    // Send users to the public landing page instead of forcing login,
+    // so manual logouts don't bounce back to /login.
+    window.location.href = '/landing';
     throw new Error('Session expired');
   }
 

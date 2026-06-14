@@ -6,59 +6,60 @@ import { useAuth } from '@/contexts/AuthContext';
 const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const isHomePage = location.pathname === '/';
+  const isLanding = location.pathname === '/';
   const { theme, toggleTheme } = useTheme();
   const { isAuthenticated, logout } = useAuth();
+  const homePath = isAuthenticated ? '/app' : '/landing';
 
   const handleLogout = () => {
+    navigate('/landing', { replace: true });
     logout();
-    navigate('/login');
   };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 shadow-sm backdrop-blur">
-      <div className="container flex h-16 items-center justify-between px-4 sm:px-6">
-        <div className="flex items-center gap-3">
-          {!isHomePage && (
+      <div className="container flex h-16 items-center justify-between px-3 sm:px-6">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+          {!isLanding && (
             <button
               onClick={() => navigate(-1)}
-              className="mr-2 flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              className="mr-1.5 flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground sm:mr-2"
               aria-label="Go back"
             >
               <ArrowLeft className="h-5 w-5" />
             </button>
           )}
 
-          <Link to="/" className="flex items-center gap-3 transition-opacity hover:opacity-80">
+          <Link to={homePath} className="flex min-w-0 items-center gap-2 transition-opacity hover:opacity-80 sm:gap-3">
             <img
               src="/logo.png"
               alt="Study Assistant"
-              className="h-30 w-20 rounded-lg object-contain"
+              className="h-9 w-auto rounded-lg object-contain sm:h-10"
             />
-            <div className="flex flex-col">
-              <span className="text-lg font-bold leading-tight text-foreground">
+            <div className="flex min-w-0 flex-col">
+              <span className="truncate text-base font-bold leading-tight text-foreground sm:text-lg">
                 Study Assistant
               </span>
-              <span className="text-xs text-muted-foreground">
+              <span className="hidden text-[11px] text-muted-foreground sm:inline">
                 Learn smarter, not harder
               </span>
             </div>
           </Link>
         </div>
 
-        <nav className="flex items-center gap-2">
+        <nav className="flex items-center gap-1.5 sm:gap-2">
           {isAuthenticated && (
             <>
               <Link
-                to="/"
-                className="hidden rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground sm:inline-flex"
+                to="/app"
+                className="hidden rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground sm:inline-flex"
               >
                 Home
               </Link>
 
               <Link
-                to="/library"
-                className="flex h-9 items-center gap-1.5 rounded-lg px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                to="/app/library"
+                className="hidden h-9 items-center gap-1.5 rounded-lg px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground sm:flex"
                 aria-label="My Library"
               >
                 <Library className="h-5 w-5" />

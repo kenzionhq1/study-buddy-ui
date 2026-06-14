@@ -1,6 +1,6 @@
 import { useState, FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { UserPlus, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { UserPlus, Eye, EyeOff, Loader2, Mail, BadgeCheck, Lock, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
@@ -29,7 +29,7 @@ const RegisterPage = () => {
 
     try {
       await register(name, email, password);
-      navigate('/', { replace: true });
+      navigate('/app', { replace: true });
 
     } catch (err: any) {
       setError(err.message || 'Registration failed. Please try again.');
@@ -39,58 +39,73 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="w-full max-w-md animate-fade-in-scale">
-        <div className="mb-8 text-center">
-          <img src="/logo.png" alt="Study Assistant" className="mx-auto h-16 w-auto" />
-          <h1 className="mt-4 text-2xl font-bold text-foreground">Create your account</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Start generating smart study notes
+    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-6 sm:py-10 page-shell">
+      <div className="w-full max-w-md animate-fade-in-scale rounded-2xl border border-border bg-card shadow-xl">
+        <div className="border-b border-border px-6 py-5 text-center sm:text-left">
+          <div className="flex items-center justify-center gap-3 sm:justify-start">
+            <img src="/logo.png" alt="Study Assistant" className="h-12 w-auto rounded-lg" />
+            <div className="hidden sm:block">
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">Get started</p>
+              <h1 className="text-xl font-bold text-foreground">Create your account</h1>
+            </div>
+          </div>
+          <p className="mt-3 text-sm text-muted-foreground sm:mt-2">
+            Build your study workspace and generate AI-powered notes instantly.
           </p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-card"
+          className="space-y-4 px-6 py-6"
         >
           {error && (
-            <div className="rounded-lg bg-destructive/10 px-4 py-2 text-sm text-destructive">
-              {error}
+            <div className="flex items-start gap-2 rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
+              <AlertCircle className="mt-0.5 h-4 w-4" />
+              <span>{error}</span>
             </div>
           )}
 
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-foreground">Full Name</label>
-            <Input
-              type="text"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="John Doe"
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-foreground">Email</label>
-            <Input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-foreground">Password</label>
+            <label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Full Name</label>
             <div className="relative">
+              <BadgeCheck className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="John Doe"
+                className="w-full rounded-xl pl-9"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Email</label>
+            <div className="relative">
+              <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="w-full rounded-xl pl-9"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Password</label>
+            <div className="relative">
+              <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 type={showPw ? 'text' : 'password'}
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Min 6 characters"
-                className="pr-10"
+                className="w-full rounded-xl pl-9 pr-10"
               />
               <button
                 type="button"
@@ -102,7 +117,7 @@ const RegisterPage = () => {
             </div>
           </div>
 
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button type="submit" className="w-full rounded-xl py-3 text-base" disabled={loading}>
             {loading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
@@ -113,12 +128,12 @@ const RegisterPage = () => {
             )}
           </Button>
 
-          <p className="text-center text-sm text-muted-foreground">
+          <div className="text-center text-sm text-muted-foreground">
             Already have an account?{' '}
-            <Link to="/login" className="font-medium text-primary hover:underline">
+            <Link to="/login" className="font-semibold text-primary hover:underline">
               Sign in
             </Link>
-          </p>
+          </div>
         </form>
       </div>
     </div>
